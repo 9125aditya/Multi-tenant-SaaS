@@ -6,3 +6,9 @@ export const registerSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
   tenantId: z.string().min(1, "Tenant ID is required"),
 });
+
+export const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+  tenantId: z.string().min(1, "Tenant ID is required"),
+});

@@ -1,7 +1,11 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
-import { registerSchema } from "../schemas/auth.schema.js";
+import { 
+  registerSchema ,
+  loginSchema
+ } from "../schemas/auth.schema.js";
 
 const router = Router();
 
@@ -71,6 +75,89 @@ router.post("/register", async (req, res) => {
       success: true,
       message: "User registered successfully",
       data: userWithoutPassword,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+});
+
+router.post("/login", async (req, res) => {
+  try {
+    // 1. Validate request
+    const result = loginSchema.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid input",
+        errors: result.error.issues,
+      });
+    }
+
+    const { email, password, tenantId } = result.data;
+
+    // 2. Find user inside the tenant
+    const user = await prisma.user.findUnique({
+      where: {
+        tenantId_email: {
+          tenantId,
+          email,
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    // 3. Compare password
+    const passwordMatch = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    if (!passwordMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    // 4. Generate JWT
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        tenantId: user.tenantId,
+        role: user.role,
+      },
+      process.env.JWT_SECRET!,
+      {
+        expiresIn: "1d",
+      }
+    );
+
+    // 5. Return token
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: {
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          tenantId: user.tenantId,
+        },
+      },
     });
   } catch (error) {
     console.error(error);
