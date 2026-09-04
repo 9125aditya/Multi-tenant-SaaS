@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import tenantRoutes from "./routes/tenant.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 
 const app = express();
 
@@ -15,5 +16,6 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/tenants", tenantRoutes);
+app.use("/api/auth", authRoutes);
 
 export default app;
