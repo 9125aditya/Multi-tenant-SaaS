@@ -6,6 +6,7 @@ import {
   registerSchema ,
   loginSchema
  } from "../schemas/auth.schema.js";
+ import { authenticate, AuthRequest } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
@@ -167,6 +168,14 @@ router.post("/login", async (req, res) => {
       message: "Something went wrong",
     });
   }
+});
+
+router.get("/me", authenticate, async (req: AuthRequest, res) => {
+  return res.status(200).json({
+    success: true,
+    message: "Authenticated successfully",
+    user: req.user,
+  });
 });
 
 export default router;
