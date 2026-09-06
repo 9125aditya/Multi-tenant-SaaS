@@ -1,23 +1,37 @@
 import { Router } from "express";
 import prisma from "../lib/prisma.js";
-
+import {
+  authenticate,
+  AuthRequest,
+} from "../middleware/auth.middleware.js";
 const router = Router();
 
 // Get all tenants
-router.get("/", async (req, res) => {
+router.get("/", authenticate, async (req: AuthRequest, res) => {
   try {
-    const tenants = await prisma.tenant.findMany();
+    const tenant = await prisma.tenant.findUnique({
+      where: {
+        id: req.user!.tenantId,
+      },
+    });
 
-    res.json({
+    if (!tenant) {
+      return res.status(404).json({
+        success: false,
+        message: "Tenant not found",
+      });
+    }
+
+    return res.json({
       success: true,
-      data: tenants,
+      data: tenant,
     });
   } catch (error) {
     console.error(error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: "Failed to fetch tenants",
+      message: "Failed to fetch tenant",
     });
   }
 });
