@@ -7,6 +7,7 @@ import {
   loginSchema
  } from "../schemas/auth.schema.js";
  import { authenticate, AuthRequest } from "../middleware/auth.middleware.js";
+ import { authorize } from "../middleware/role.middleware.js";
 
 const router = Router();
 
@@ -177,5 +178,18 @@ router.get("/me", authenticate, async (req: AuthRequest, res) => {
     user: req.user,
   });
 });
+
+router.get(
+  "/admin-test",
+  authenticate,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  async (req: AuthRequest, res) => {
+    return res.status(200).json({
+      success: true,
+      message: "You have admin access",
+      user: req.user,
+    });
+  }
+);
 
 export default router;
