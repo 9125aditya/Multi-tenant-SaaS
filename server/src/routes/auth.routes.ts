@@ -179,17 +179,6 @@ router.get("/me", authenticate, async (req: AuthRequest, res) => {
   });
 });
 
-router.get(
-  "/admin-test",
-  authenticate,
-  authorize("ADMIN", "SUPER_ADMIN"),
-  async (req: AuthRequest, res) => {
-    return res.status(200).json({
-      success: true,
-      message: "You have admin access",
-      user: req.user,
-    });
-  }
-);
+
 
 export default router;

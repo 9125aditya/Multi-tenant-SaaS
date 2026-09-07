@@ -4,6 +4,8 @@ import {
   authenticate,
   AuthRequest,
 } from "../middleware/auth.middleware.js";
+import { authorize } from "../middleware/role.middleware.js";
+
 const router = Router();
 
 // Get all tenants
@@ -37,7 +39,11 @@ router.get("/", authenticate, async (req: AuthRequest, res) => {
 });
 
 // Create a tenant
-router.post("/", async (req, res) => {
+router.post(
+  "/",
+  authenticate,
+  authorize("SUPER_ADMIN"),
+  async (req: AuthRequest, res) => {
   try {
     const { name, slug } = req.body;
 
