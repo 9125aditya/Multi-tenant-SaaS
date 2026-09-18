@@ -75,4 +75,76 @@ router.post(
   }
 });
 
+// Update a tenant
+router.patch(
+  "/:tenantId",
+  authenticate,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  async (req: AuthRequest, res) => {
+    try {
+      const { tenantId } = req.params;
+      const { name, slug } = req.body;
+
+      // ADMIN can only update their own tenant
+      if (
+        req.user!.role === "ADMIN" &&
+        req.user!.tenantId !== tenantId
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "You cannot update another tenant",
+        });
+      }
+
+      // Make sure tenant exists
+      const existingTenant = await prisma.tenant.findUnique({
+        where: {
+          id: tenantId,
+        },
+      });
+
+      if (!existingTenant) {
+        return res.status(404).json({
+          success: false,
+          message: "Tenant not found",
+        });
+      }
+
+      // Build update data
+      const updateData: {
+        name?: string;
+        slug?: string;
+      } = {};
+
+      if (name) {
+        updateData.name = name;
+      }
+
+      if (slug) {
+        updateData.slug = slug;
+      }
+
+      const tenant = await prisma.tenant.update({
+        where: {
+          id: tenantId,
+        },
+        data: updateData,
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Tenant updated successfully",
+        data: tenant,
+      });
+    } catch (error) {
+      console.error(error);
+
+      return res.status(500).json({
+        success: false,
+        message: "Failed to update tenant",
+      });
+    }
+  }
+);
+
 export default router;
