@@ -82,7 +82,7 @@ router.patch(
   authorize("ADMIN", "SUPER_ADMIN"),
   async (req: AuthRequest, res) => {
     try {
-      const { tenantId } = req.params;
+     const tenantId = req.params.tenantId as string;
       const { name, slug } = req.body;
 
       // ADMIN can only update their own tenant
