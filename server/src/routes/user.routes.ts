@@ -5,6 +5,7 @@ import {
   AuthRequest,
 } from "../middleware/auth.middleware.js";
 import { authorize } from "../middleware/role.middleware.js";
+import { updateUserSchema } from "../schemas/user.schema.js";
 
 const router = Router();
 
@@ -86,7 +87,18 @@ router.get("/:id", authenticate, async (req: AuthRequest, res) => {
 router.patch("/:id", authenticate, authorize("ADMIN", "SUPER_ADMIN"), async (req: AuthRequest, res) => {
   try {
   const id = req.params.id as string;
-    const { name, email, role } = req.body;
+
+const result = updateUserSchema.safeParse(req.body);
+
+if (!result.success) {
+  return res.status(400).json({
+    success: false,
+    message: "Invalid input",
+    errors: result.error.issues,
+  });
+}
+
+const { name, email, role } = result.data;
 
     const existingUser = await prisma.user.findFirst({
       where: {

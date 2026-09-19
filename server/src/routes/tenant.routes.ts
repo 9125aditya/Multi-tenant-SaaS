@@ -5,6 +5,10 @@ import {
   AuthRequest,
 } from "../middleware/auth.middleware.js";
 import { authorize } from "../middleware/role.middleware.js";
+import {
+  createTenantSchema,
+  updateTenantSchema,
+} from "../schemas/tenant.schema.js";
 
 const router = Router();
 
@@ -45,14 +49,17 @@ router.post(
   authorize("SUPER_ADMIN"),
   async (req: AuthRequest, res) => {
   try {
-    const { name, slug } = req.body;
+    const result = createTenantSchema.safeParse(req.body);
 
-    if (!name || !slug) {
-      return res.status(400).json({
-        success: false,
-        message: "Name and slug are required",
-      });
-    }
+if (!result.success) {
+  return res.status(400).json({
+    success: false,
+    message: "Invalid input",
+    errors: result.error.issues,
+  });
+}
+
+const { name, slug } = result.data;
 
     const tenant = await prisma.tenant.create({
       data: {
@@ -82,9 +89,19 @@ router.patch(
   authorize("ADMIN", "SUPER_ADMIN"),
   async (req: AuthRequest, res) => {
     try {
-     const tenantId = req.params.tenantId as string;
-      const { name, slug } = req.body;
+    const tenantId = req.params.tenantId as string;
 
+const result = updateTenantSchema.safeParse(req.body);
+
+if (!result.success) {
+  return res.status(400).json({
+    success: false,
+    message: "Invalid input",
+    errors: result.error.issues,
+  });
+}
+
+const { name, slug } = result.data;
       // ADMIN can only update their own tenant
       if (
         req.user!.role === "ADMIN" &&
