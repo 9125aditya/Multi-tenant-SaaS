@@ -47,7 +47,7 @@ router.post(
   "/",
   authenticate,
   authorize("SUPER_ADMIN"),
-  async (req: AuthRequest, res) => {
+  async (req: AuthRequest, res, next) => {
   try {
     const result = createTenantSchema.safeParse(req.body);
 
@@ -72,13 +72,8 @@ const { name, slug } = result.data;
       success: true,
       data: tenant,
     });
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to create tenant",
-    });
+    } catch (error) {
+    next(error);
   }
 });
 

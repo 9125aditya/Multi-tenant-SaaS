@@ -11,7 +11,7 @@ import {
 
 const router = Router();
 
-router.post("/register", async (req, res) => {
+router.post("/register", async (req, res , next) => {
   try {
     // 1. Validate request
     const result = registerSchema.safeParse(req.body);
@@ -79,16 +79,11 @@ router.post("/register", async (req, res) => {
       data: userWithoutPassword,
     });
   } catch (error) {
-    console.error(error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-    });
+    next(error);
   }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", async (req, res , next) => {
   try {
     // 1. Validate request
     const result = loginSchema.safeParse(req.body);
@@ -162,12 +157,7 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-    });
+    next(error);
   }
 });
 
