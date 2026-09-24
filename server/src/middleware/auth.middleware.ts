@@ -1,15 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import prisma from "../lib/prisma.js";
 
 export interface AuthRequest extends Request {
   user?: {
     userId: string;
     tenantId: string;
     role: string;
+    tokenVersion: number;
   };
 }
 
-export const authenticate = (
+export const authenticate = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
@@ -33,9 +35,42 @@ export const authenticate = (
       userId: string;
       tenantId: string;
       role: string;
+      tokenVersion: number;
     };
 
-    req.user = decoded;
+    const user = await prisma.user.findFirst({
+      where: {
+        id: decoded.userId,
+        tenantId: decoded.tenantId,
+      },
+      select: {
+        id: true,
+        tenantId: true,
+        role: true,
+        tokenVersion: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User no longer exists",
+      });
+    }
+
+    if (user.tokenVersion !== decoded.tokenVersion) {
+      return res.status(401).json({
+        success: false,
+        message: "Session has been invalidated",
+      });
+    }
+
+    req.user = {
+      userId: user.id,
+      tenantId: user.tenantId,
+      role: user.role,
+      tokenVersion: user.tokenVersion,
+    };
 
     next();
   } catch (error) {

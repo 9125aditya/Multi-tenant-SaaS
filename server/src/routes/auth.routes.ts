@@ -4,7 +4,8 @@ import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
 import { 
   registerSchema ,
-  loginSchema
+  loginSchema,
+  changePasswordSchema,
  } from "../schemas/auth.schema.js";
  import { authenticate, AuthRequest } from "../middleware/auth.middleware.js";
  import { authorize } from "../middleware/role.middleware.js";
@@ -134,6 +135,7 @@ router.post("/login", async (req, res , next) => {
         userId: user.id,
         tenantId: user.tenantId,
         role: user.role,
+          tokenVersion: user.tokenVersion,
       },
       process.env.JWT_SECRET!,
       {
@@ -160,6 +162,91 @@ router.post("/login", async (req, res , next) => {
     next(error);
   }
 });
+
+router.patch(
+  "/change-password",
+  authenticate,
+  async (req: AuthRequest, res, next) => {
+    try {
+      // 1. Validate request
+      const result = changePasswordSchema.safeParse(req.body);
+
+      if (!result.success) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid input",
+          errors: result.error.issues,
+        });
+      }
+
+      const { currentPassword, newPassword } = result.data;
+
+      // 2. Find the authenticated user
+      const user = await prisma.user.findFirst({
+        where: {
+          id: req.user!.userId,
+          tenantId: req.user!.tenantId,
+        },
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      // 3. Verify current password
+      const passwordMatch = await bcrypt.compare(
+        currentPassword,
+        user.password
+      );
+
+      if (!passwordMatch) {
+        return res.status(401).json({
+          success: false,
+          message: "Current password is incorrect",
+        });
+      }
+
+      // 4. Prevent using the same password
+      const samePassword = await bcrypt.compare(
+        newPassword,
+        user.password
+      );
+
+      if (samePassword) {
+        return res.status(400).json({
+          success: false,
+          message: "New password must be different from current password",
+        });
+      }
+
+      // 5. Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      // 6. Update password
+      await prisma.user.update({
+  where: {
+    id: user.id,
+  },
+  data: {
+    password: hashedPassword,
+    tokenVersion: {
+      increment: 1,
+    },
+  },
+});
+
+      return res.status(200).json({
+        success: true,
+        message: "Password changed successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 router.get("/me", authenticate, async (req: AuthRequest, res) => {
   return res.status(200).json({

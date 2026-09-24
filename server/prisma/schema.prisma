@@ -31,6 +31,7 @@ model User {
   password  String
   role      Role     @default(USER)
   tenantId  String
+  tokenVersion Int      @default(0)
 
   tenant    Tenant   @relation(fields: [tenantId], references: [id])
 
