@@ -1,12 +1,17 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import {
+  generateAccessToken,
+  generateRefreshTokenPair,
+} from "../utils/auth-tokens.js";
 import prisma from "../lib/prisma.js";
 import { 
   registerSchema ,
   loginSchema,
   changePasswordSchema,
+  refreshTokenSchema,
  } from "../schemas/auth.schema.js";
+ import { hashRefreshToken } from "../utils/refresh-token.js";
  import { authenticate, AuthRequest } from "../middleware/auth.middleware.js";
  import { authorize } from "../middleware/role.middleware.js";
 
@@ -129,34 +134,229 @@ router.post("/login", async (req, res , next) => {
       });
     }
 
-    // 4. Generate JWT
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        tenantId: user.tenantId,
-        role: user.role,
-          tokenVersion: user.tokenVersion,
+  // 4. Generate access token
+const accessToken = generateAccessToken({
+  userId: user.id,
+  tenantId: user.tenantId,
+  role: user.role,
+  tokenVersion: user.tokenVersion,
+});
+
+// 5. Generate refresh token
+const {
+  refreshToken,
+  refreshTokenHash,
+} = generateRefreshTokenPair();
+
+// 6. Store refresh session
+const expiresAt = new Date(
+  Date.now() + 7 * 24 * 60 * 60 * 1000
+);
+
+await prisma.refreshSession.create({
+  data: {
+    tokenHash: refreshTokenHash,
+    userId: user.id,
+    tenantId: user.tenantId,
+    tokenVersion: user.tokenVersion,
+    expiresAt,
+  },
+});
+
+// 7. Return tokens
+return res.status(200).json({
+  success: true,
+  message: "Login successful",
+  data: {
+    accessToken,
+    refreshToken,
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      tenantId: user.tenantId,
+    },
+  },
+});
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/refresh", async (req, res, next) => {
+  try {
+    // 1. Validate request
+    const result = refreshTokenSchema.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid input",
+        errors: result.error.issues,
+      });
+    }
+
+    const { refreshToken } = result.data;
+
+    // 2. Hash the provided refresh token
+    const tokenHash = hashRefreshToken(refreshToken);
+
+    // 3. Find the refresh session
+    const session = await prisma.refreshSession.findUnique({
+      where: {
+        tokenHash,
       },
-      process.env.JWT_SECRET!,
-      {
-        expiresIn: "1d",
-      }
+    });
+
+    if (!session) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid refresh token",
+      });
+    }
+
+    // 4. Check if session was revoked
+    if (session.revokedAt) {
+      return res.status(401).json({
+        success: false,
+        message: "Refresh token has been revoked",
+      });
+    }
+
+    // 5. Check expiry
+    if (session.expiresAt <= new Date()) {
+      return res.status(401).json({
+        success: false,
+        message: "Refresh token has expired",
+      });
+    }
+
+    // 6. Get current user
+    const user = await prisma.user.findFirst({
+      where: {
+        id: session.userId,
+        tenantId: session.tenantId,
+      },
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User no longer exists",
+      });
+    }
+
+    // 7. Check token version
+    if (session.tokenVersion !== user.tokenVersion) {
+      return res.status(401).json({
+        success: false,
+        message: "Session has been invalidated",
+      });
+    }
+
+    // 8. Rotate refresh token
+    const {
+      refreshToken: newRefreshToken,
+      refreshTokenHash: newRefreshTokenHash,
+    } = generateRefreshTokenPair();
+
+    const newExpiresAt = new Date(
+      Date.now() + 7 * 24 * 60 * 60 * 1000
     );
 
-    // 5. Return token
+    // 9. Revoke old session and create new session
+    await prisma.$transaction([
+      prisma.refreshSession.update({
+        where: {
+          id: session.id,
+        },
+        data: {
+          revokedAt: new Date(),
+        },
+      }),
+
+      prisma.refreshSession.create({
+        data: {
+          tokenHash: newRefreshTokenHash,
+          userId: user.id,
+          tenantId: user.tenantId,
+          tokenVersion: user.tokenVersion,
+          expiresAt: newExpiresAt,
+        },
+      }),
+    ]);
+
+    // 10. Generate new access token
+    const accessToken = generateAccessToken({
+      userId: user.id,
+      tenantId: user.tenantId,
+      role: user.role,
+      tokenVersion: user.tokenVersion,
+    });
+
+    // 11. Return new tokens
     return res.status(200).json({
       success: true,
-      message: "Login successful",
+      message: "Token refreshed successfully",
       data: {
-        token,
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          tenantId: user.tenantId,
-        },
+        accessToken,
+        refreshToken: newRefreshToken,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/logout", async (req, res, next) => {
+  try {
+    // 1. Validate request
+    const result = refreshTokenSchema.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid input",
+        errors: result.error.issues,
+      });
+    }
+
+    const { refreshToken } = result.data;
+
+    // 2. Hash refresh token
+    const tokenHash = hashRefreshToken(refreshToken);
+
+    // 3. Find session
+    const session = await prisma.refreshSession.findUnique({
+      where: {
+        tokenHash,
+      },
+    });
+
+    // 4. Don't reveal whether the token exists
+    if (!session) {
+      return res.status(200).json({
+        success: true,
+        message: "Logged out successfully",
+      });
+    }
+
+    // 5. Revoke session
+    if (!session.revokedAt) {
+      await prisma.refreshSession.update({
+        where: {
+          id: session.id,
+        },
+        data: {
+          revokedAt: new Date(),
+        },
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
     });
   } catch (error) {
     next(error);
@@ -226,17 +426,29 @@ router.patch(
       const hashedPassword = await bcrypt.hash(newPassword, 10);
 
       // 6. Update password
-      await prisma.user.update({
-  where: {
-    id: user.id,
-  },
-  data: {
-    password: hashedPassword,
-    tokenVersion: {
-      increment: 1,
+      await prisma.$transaction([
+  prisma.user.update({
+    where: {
+      id: user.id,
     },
-  },
-});
+    data: {
+      password: hashedPassword,
+      tokenVersion: {
+        increment: 1,
+      },
+    },
+  }),
+
+  prisma.refreshSession.updateMany({
+    where: {
+      userId: user.id,
+      revokedAt: null,
+    },
+    data: {
+      revokedAt: new Date(),
+    },
+  }),
+]);
 
       return res.status(200).json({
         success: true,

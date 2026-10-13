@@ -21,23 +21,43 @@ model Tenant {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users     User[]
+  users           User[]
+  refreshSessions RefreshSession[]
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String  
-  password  String
-  role      Role     @default(USER)
-  tenantId  String
-  tokenVersion Int      @default(0)
+  id           String @id @default(cuid())
+  name         String
+  email        String
+  password     String
+  role         Role   @default(USER)
+  tenantId     String
+  tokenVersion Int    @default(0)
 
-  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  tenant          Tenant           @relation(fields: [tenantId], references: [id])
+  refreshSessions RefreshSession[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-@@unique([tenantId, email])
-@@index([tenantId])
+  @@unique([tenantId, email])
+  @@index([tenantId])
+}
+
+model RefreshSession {
+  id           String    @id @default(cuid())
+  tokenHash    String    @unique
+  userId       String
+  tenantId     String
+  tokenVersion Int
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  createdAt    DateTime  @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tenantId])
+  @@index([expiresAt])
 }
