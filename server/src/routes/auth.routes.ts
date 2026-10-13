@@ -19,10 +19,11 @@ import {
  import { hashRefreshToken } from "../utils/refresh-token.js";
  import { authenticate, AuthRequest } from "../middleware/auth.middleware.js";
  import { authorize } from "../middleware/role.middleware.js";
+ import { authRateLimiter } from "../middleware/rate-limit.middleware.js";
 
 const router = Router();
 
-router.post("/register", async (req, res , next) => {
+router.post("/register", authRateLimiter, async (req, res , next) => {
   try {
     // 1. Validate request
     const result = registerSchema.safeParse(req.body);
@@ -118,7 +119,7 @@ console.log("Email verification URL:", verificationUrl);
   }
 });
 
-router.post("/login", async (req, res , next) => {
+router.post("/login", authRateLimiter, async (req, res , next) => {
   try {
     // 1. Validate request
     const result = loginSchema.safeParse(req.body);
@@ -227,7 +228,7 @@ return res.status(200).json({
   }
 });
 
-router.post("/refresh", async (req, res, next) => {
+router.post("/refresh", authRateLimiter, async (req, res, next) => {
   try {
     // 1. Validate request
     const result = refreshTokenSchema.safeParse(req.body);
@@ -352,7 +353,7 @@ router.post("/refresh", async (req, res, next) => {
   }
 });
 
-router.get("/verify-email", async (req, res, next) => {
+router.get("/verify-email",  async (req, res, next) => {
   try {
     const token = req.query.token;
 
@@ -443,7 +444,7 @@ router.get("/verify-email", async (req, res, next) => {
   }
 });
 
-router.post("/resend-verification", async (req, res, next) => {
+router.post("/resend-verification", authRateLimiter, async (req, res, next) => {
   try {
     const result = resendVerificationSchema.safeParse(req.body);
 
