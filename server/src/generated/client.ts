@@ -61,3 +61,8 @@ export type RefreshSession = Prisma.RefreshSessionModel
  * 
  */
 export type EmailVerificationToken = Prisma.EmailVerificationTokenModel
+/**
+ * Model PasswordResetToken
+ * 
+ */
+export type PasswordResetToken = Prisma.PasswordResetTokenModel
