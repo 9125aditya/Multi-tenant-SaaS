@@ -32,3 +32,8 @@ export type User = Prisma.UserModel
  * 
  */
 export type RefreshSession = Prisma.RefreshSessionModel
+/**
+ * Model EmailVerificationToken
+ * 
+ */
+export type EmailVerificationToken = Prisma.EmailVerificationTokenModel

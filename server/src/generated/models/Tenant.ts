@@ -184,6 +184,7 @@ export type TenantWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Tenant"> | Date | string
   users?: Prisma.UserListRelationFilter
   refreshSessions?: Prisma.RefreshSessionListRelationFilter
+  emailVerificationTokens?: Prisma.EmailVerificationTokenListRelationFilter
 }
 
 export type TenantOrderByWithRelationInput = {
@@ -194,6 +195,7 @@ export type TenantOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   users?: Prisma.UserOrderByRelationAggregateInput
   refreshSessions?: Prisma.RefreshSessionOrderByRelationAggregateInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenOrderByRelationAggregateInput
 }
 
 export type TenantWhereUniqueInput = Prisma.AtLeast<{
@@ -207,6 +209,7 @@ export type TenantWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Tenant"> | Date | string
   users?: Prisma.UserListRelationFilter
   refreshSessions?: Prisma.RefreshSessionListRelationFilter
+  emailVerificationTokens?: Prisma.EmailVerificationTokenListRelationFilter
 }, "id" | "slug">
 
 export type TenantOrderByWithAggregationInput = {
@@ -239,6 +242,7 @@ export type TenantCreateInput = {
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   refreshSessions?: Prisma.RefreshSessionCreateNestedManyWithoutTenantInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutTenantInput
 }
 
 export type TenantUncheckedCreateInput = {
@@ -249,6 +253,7 @@ export type TenantUncheckedCreateInput = {
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   refreshSessions?: Prisma.RefreshSessionUncheckedCreateNestedManyWithoutTenantInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutTenantInput
 }
 
 export type TenantUpdateInput = {
@@ -259,6 +264,7 @@ export type TenantUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   refreshSessions?: Prisma.RefreshSessionUpdateManyWithoutTenantNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateInput = {
@@ -269,6 +275,7 @@ export type TenantUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   refreshSessions?: Prisma.RefreshSessionUncheckedUpdateManyWithoutTenantNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutTenantNestedInput
 }
 
 export type TenantCreateManyInput = {
@@ -360,6 +367,20 @@ export type TenantUpdateOneRequiredWithoutRefreshSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.TenantUpdateToOneWithWhereWithoutRefreshSessionsInput, Prisma.TenantUpdateWithoutRefreshSessionsInput>, Prisma.TenantUncheckedUpdateWithoutRefreshSessionsInput>
 }
 
+export type TenantCreateNestedOneWithoutEmailVerificationTokensInput = {
+  create?: Prisma.XOR<Prisma.TenantCreateWithoutEmailVerificationTokensInput, Prisma.TenantUncheckedCreateWithoutEmailVerificationTokensInput>
+  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutEmailVerificationTokensInput
+  connect?: Prisma.TenantWhereUniqueInput
+}
+
+export type TenantUpdateOneRequiredWithoutEmailVerificationTokensNestedInput = {
+  create?: Prisma.XOR<Prisma.TenantCreateWithoutEmailVerificationTokensInput, Prisma.TenantUncheckedCreateWithoutEmailVerificationTokensInput>
+  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutEmailVerificationTokensInput
+  upsert?: Prisma.TenantUpsertWithoutEmailVerificationTokensInput
+  connect?: Prisma.TenantWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TenantUpdateToOneWithWhereWithoutEmailVerificationTokensInput, Prisma.TenantUpdateWithoutEmailVerificationTokensInput>, Prisma.TenantUncheckedUpdateWithoutEmailVerificationTokensInput>
+}
+
 export type TenantCreateWithoutUsersInput = {
   id?: string
   name: string
@@ -367,6 +388,7 @@ export type TenantCreateWithoutUsersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   refreshSessions?: Prisma.RefreshSessionCreateNestedManyWithoutTenantInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutUsersInput = {
@@ -376,6 +398,7 @@ export type TenantUncheckedCreateWithoutUsersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   refreshSessions?: Prisma.RefreshSessionUncheckedCreateNestedManyWithoutTenantInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutUsersInput = {
@@ -401,6 +424,7 @@ export type TenantUpdateWithoutUsersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshSessions?: Prisma.RefreshSessionUpdateManyWithoutTenantNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutUsersInput = {
@@ -410,6 +434,7 @@ export type TenantUncheckedUpdateWithoutUsersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshSessions?: Prisma.RefreshSessionUncheckedUpdateManyWithoutTenantNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutRefreshSessionsInput = {
@@ -419,6 +444,7 @@ export type TenantCreateWithoutRefreshSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutRefreshSessionsInput = {
@@ -428,6 +454,7 @@ export type TenantUncheckedCreateWithoutRefreshSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutRefreshSessionsInput = {
@@ -453,6 +480,7 @@ export type TenantUpdateWithoutRefreshSessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutRefreshSessionsInput = {
@@ -462,6 +490,63 @@ export type TenantUncheckedUpdateWithoutRefreshSessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type TenantCreateWithoutEmailVerificationTokensInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  refreshSessions?: Prisma.RefreshSessionCreateNestedManyWithoutTenantInput
+}
+
+export type TenantUncheckedCreateWithoutEmailVerificationTokensInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  refreshSessions?: Prisma.RefreshSessionUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type TenantCreateOrConnectWithoutEmailVerificationTokensInput = {
+  where: Prisma.TenantWhereUniqueInput
+  create: Prisma.XOR<Prisma.TenantCreateWithoutEmailVerificationTokensInput, Prisma.TenantUncheckedCreateWithoutEmailVerificationTokensInput>
+}
+
+export type TenantUpsertWithoutEmailVerificationTokensInput = {
+  update: Prisma.XOR<Prisma.TenantUpdateWithoutEmailVerificationTokensInput, Prisma.TenantUncheckedUpdateWithoutEmailVerificationTokensInput>
+  create: Prisma.XOR<Prisma.TenantCreateWithoutEmailVerificationTokensInput, Prisma.TenantUncheckedCreateWithoutEmailVerificationTokensInput>
+  where?: Prisma.TenantWhereInput
+}
+
+export type TenantUpdateToOneWithWhereWithoutEmailVerificationTokensInput = {
+  where?: Prisma.TenantWhereInput
+  data: Prisma.XOR<Prisma.TenantUpdateWithoutEmailVerificationTokensInput, Prisma.TenantUncheckedUpdateWithoutEmailVerificationTokensInput>
+}
+
+export type TenantUpdateWithoutEmailVerificationTokensInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  refreshSessions?: Prisma.RefreshSessionUpdateManyWithoutTenantNestedInput
+}
+
+export type TenantUncheckedUpdateWithoutEmailVerificationTokensInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  refreshSessions?: Prisma.RefreshSessionUncheckedUpdateManyWithoutTenantNestedInput
 }
 
 
@@ -472,11 +557,13 @@ export type TenantUncheckedUpdateWithoutRefreshSessionsInput = {
 export type TenantCountOutputType = {
   users: number
   refreshSessions: number
+  emailVerificationTokens: number
 }
 
 export type TenantCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | TenantCountOutputTypeCountUsersArgs
   refreshSessions?: boolean | TenantCountOutputTypeCountRefreshSessionsArgs
+  emailVerificationTokens?: boolean | TenantCountOutputTypeCountEmailVerificationTokensArgs
 }
 
 /**
@@ -503,6 +590,13 @@ export type TenantCountOutputTypeCountRefreshSessionsArgs<ExtArgs extends runtim
   where?: Prisma.RefreshSessionWhereInput
 }
 
+/**
+ * TenantCountOutputType without action
+ */
+export type TenantCountOutputTypeCountEmailVerificationTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EmailVerificationTokenWhereInput
+}
+
 
 export type TenantSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -512,6 +606,7 @@ export type TenantSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   updatedAt?: boolean
   users?: boolean | Prisma.Tenant$usersArgs<ExtArgs>
   refreshSessions?: boolean | Prisma.Tenant$refreshSessionsArgs<ExtArgs>
+  emailVerificationTokens?: boolean | Prisma.Tenant$emailVerificationTokensArgs<ExtArgs>
   _count?: boolean | Prisma.TenantCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tenant"]>
 
@@ -543,6 +638,7 @@ export type TenantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 export type TenantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.Tenant$usersArgs<ExtArgs>
   refreshSessions?: boolean | Prisma.Tenant$refreshSessionsArgs<ExtArgs>
+  emailVerificationTokens?: boolean | Prisma.Tenant$emailVerificationTokensArgs<ExtArgs>
   _count?: boolean | Prisma.TenantCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TenantIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -553,6 +649,7 @@ export type $TenantPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   objects: {
     users: Prisma.$UserPayload<ExtArgs>[]
     refreshSessions: Prisma.$RefreshSessionPayload<ExtArgs>[]
+    emailVerificationTokens: Prisma.$EmailVerificationTokenPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -956,6 +1053,7 @@ export interface Prisma__TenantClient<T, Null = never, ExtArgs extends runtime.T
   readonly [Symbol.toStringTag]: "PrismaPromise"
   users<T extends Prisma.Tenant$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   refreshSessions<T extends Prisma.Tenant$refreshSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$refreshSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefreshSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  emailVerificationTokens<T extends Prisma.Tenant$emailVerificationTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$emailVerificationTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmailVerificationTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1428,6 +1526,30 @@ export type Tenant$refreshSessionsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.RefreshSessionScalarFieldEnum | Prisma.RefreshSessionScalarFieldEnum[]
+}
+
+/**
+ * Tenant.emailVerificationTokens
+ */
+export type Tenant$emailVerificationTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EmailVerificationToken
+   */
+  select?: Prisma.EmailVerificationTokenSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EmailVerificationToken
+   */
+  omit?: Prisma.EmailVerificationTokenOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailVerificationTokenInclude<ExtArgs> | null
+  where?: Prisma.EmailVerificationTokenWhereInput
+  orderBy?: Prisma.EmailVerificationTokenOrderByWithRelationInput | Prisma.EmailVerificationTokenOrderByWithRelationInput[]
+  cursor?: Prisma.EmailVerificationTokenWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EmailVerificationTokenScalarFieldEnum | Prisma.EmailVerificationTokenScalarFieldEnum[]
 }
 
 /**

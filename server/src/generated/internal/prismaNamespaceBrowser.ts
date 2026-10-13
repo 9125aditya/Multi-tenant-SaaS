@@ -53,7 +53,8 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Tenant: 'Tenant',
   User: 'User',
-  RefreshSession: 'RefreshSession'
+  RefreshSession: 'RefreshSession',
+  EmailVerificationToken: 'EmailVerificationToken'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -91,6 +92,7 @@ export const UserScalarFieldEnum = {
   role: 'role',
   tenantId: 'tenantId',
   tokenVersion: 'tokenVersion',
+  emailVerifiedAt: 'emailVerifiedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -110,6 +112,19 @@ export const RefreshSessionScalarFieldEnum = {
 } as const
 
 export type RefreshSessionScalarFieldEnum = (typeof RefreshSessionScalarFieldEnum)[keyof typeof RefreshSessionScalarFieldEnum]
+
+
+export const EmailVerificationTokenScalarFieldEnum = {
+  id: 'id',
+  tokenHash: 'tokenHash',
+  userId: 'userId',
+  tenantId: 'tenantId',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EmailVerificationTokenScalarFieldEnum = (typeof EmailVerificationTokenScalarFieldEnum)[keyof typeof EmailVerificationTokenScalarFieldEnum]
 
 
 export const SortOrder = {

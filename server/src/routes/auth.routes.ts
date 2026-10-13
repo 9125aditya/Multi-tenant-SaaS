@@ -10,7 +10,12 @@ import {
   loginSchema,
   changePasswordSchema,
   refreshTokenSchema,
+  resendVerificationSchema,
  } from "../schemas/auth.schema.js";
+ import {
+  generateEmailVerificationToken,
+  hashEmailVerificationToken,
+} from "../utils/email-verification-token.js";
  import { hashRefreshToken } from "../utils/refresh-token.js";
  import { authenticate, AuthRequest } from "../middleware/auth.middleware.js";
  import { authorize } from "../middleware/role.middleware.js";
@@ -76,6 +81,30 @@ router.post("/register", async (req, res , next) => {
       },
     });
 
+    const verificationToken =
+  generateEmailVerificationToken();
+
+const verificationTokenHash =
+  hashEmailVerificationToken(verificationToken);
+
+const verificationExpiresAt = new Date(
+  Date.now() + 24 * 60 * 60 * 1000
+);
+
+await prisma.emailVerificationToken.create({
+  data: {
+    tokenHash: verificationTokenHash,
+    userId: user.id,
+    tenantId: user.tenantId,
+    expiresAt: verificationExpiresAt,
+  },
+});
+
+const verificationUrl =
+  `http://localhost:3000/api/auth/verify-email?token=${verificationToken}`;
+
+console.log("Email verification URL:", verificationUrl);
+
     // 6. Never return the password
     const { password: _, ...userWithoutPassword } = user;
 
@@ -133,6 +162,20 @@ router.post("/login", async (req, res , next) => {
         message: "Invalid email or password",
       });
     }
+
+    if (!user.emailVerifiedAt) {
+  return res.status(403).json({
+    success: false,
+    message: "Please verify your email before logging in",
+  });
+}
+if (!user.emailVerifiedAt) {
+  return res.status(403).json({
+    success: false,
+    message: "Please verify your email before logging in",
+  });
+}
+
 
   // 4. Generate access token
 const accessToken = generateAccessToken({
@@ -303,6 +346,182 @@ router.post("/refresh", async (req, res, next) => {
         accessToken,
         refreshToken: newRefreshToken,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/verify-email", async (req, res, next) => {
+  try {
+    const token = req.query.token;
+
+    if (typeof token !== "string" || !token) {
+      return res.status(400).json({
+        success: false,
+        message: "Verification token is required",
+      });
+    }
+
+    const tokenHash = hashEmailVerificationToken(token);
+
+    const verificationToken =
+      await prisma.emailVerificationToken.findUnique({
+        where: {
+          tokenHash,
+        },
+      });
+
+    if (!verificationToken) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid verification token",
+      });
+    }
+
+    if (verificationToken.usedAt) {
+      return res.status(400).json({
+        success: false,
+        message: "Verification token has already been used",
+      });
+    }
+
+    if (verificationToken.expiresAt <= new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: "Verification token has expired",
+      });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        id: verificationToken.userId,
+        tenantId: verificationToken.tenantId,
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User no longer exists",
+      });
+    }
+
+    if (user.emailVerifiedAt) {
+      return res.status(200).json({
+        success: true,
+        message: "Email is already verified",
+      });
+    }
+
+    await prisma.$transaction([
+      prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          emailVerifiedAt: new Date(),
+        },
+      }),
+
+      prisma.emailVerificationToken.update({
+        where: {
+          id: verificationToken.id,
+        },
+        data: {
+          usedAt: new Date(),
+        },
+      }),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      message: "Email verified successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/resend-verification", async (req, res, next) => {
+  try {
+    const result = resendVerificationSchema.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid input",
+        errors: result.error.issues,
+      });
+    }
+
+    const { email, tenantId } = result.data;
+
+    const user = await prisma.user.findFirst({
+      where: {
+        email,
+        tenantId,
+      },
+    });
+
+    if (!user) {
+      return res.status(200).json({
+        success: true,
+        message:
+          "If an account exists, a verification email will be sent",
+      });
+    }
+
+    if (user.emailVerifiedAt) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is already verified",
+      });
+    }
+
+    const verificationToken =
+      generateEmailVerificationToken();
+
+    const verificationTokenHash =
+      hashEmailVerificationToken(verificationToken);
+
+    const verificationExpiresAt = new Date(
+      Date.now() + 24 * 60 * 60 * 1000
+    );
+
+    await prisma.$transaction([
+      prisma.emailVerificationToken.updateMany({
+        where: {
+          userId: user.id,
+          usedAt: null,
+        },
+        data: {
+          usedAt: new Date(),
+        },
+      }),
+
+      prisma.emailVerificationToken.create({
+        data: {
+          tokenHash: verificationTokenHash,
+          userId: user.id,
+          tenantId: user.tenantId,
+          expiresAt: verificationExpiresAt,
+        },
+      }),
+    ]);
+
+    const verificationUrl =
+      `http://localhost:3000/api/auth/verify-email?token=${verificationToken}`;
+
+    console.log(
+      "Email verification URL:",
+      verificationUrl
+    );
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "If an account exists, a verification email will be sent",
     });
   } catch (error) {
     next(error);

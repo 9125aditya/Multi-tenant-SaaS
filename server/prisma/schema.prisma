@@ -21,21 +21,24 @@ model Tenant {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users           User[]
-  refreshSessions RefreshSession[]
+  users                   User[]
+  refreshSessions         RefreshSession[]
+  emailVerificationTokens EmailVerificationToken[]
 }
 
 model User {
-  id           String @id @default(cuid())
-  name         String
-  email        String
-  password     String
-  role         Role   @default(USER)
-  tenantId     String
-  tokenVersion Int    @default(0)
+  id              String    @id @default(cuid())
+  name            String
+  email           String
+  password        String
+  role            Role      @default(USER)
+  tenantId        String
+  tokenVersion    Int       @default(0)
+  emailVerifiedAt DateTime?
 
-  tenant          Tenant           @relation(fields: [tenantId], references: [id])
-  refreshSessions RefreshSession[]
+  tenant                  Tenant                   @relation(fields: [tenantId], references: [id])
+  refreshSessions         RefreshSession[]
+  emailVerificationTokens EmailVerificationToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -53,6 +56,23 @@ model RefreshSession {
   expiresAt    DateTime
   revokedAt    DateTime?
   createdAt    DateTime  @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tenantId])
+  @@index([expiresAt])
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String
+  tenantId  String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
