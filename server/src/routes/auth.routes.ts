@@ -31,6 +31,10 @@ import { authorize } from "../middleware/role.middleware.js";
 import { authRateLimiter } from "../middleware/rate-limit.middleware.js";
 import { createAuditLog } from "../utils/audit-log.js";
 import { validate } from "../middleware/validate.middleware.js";
+import {
+  sendVerificationEmail,
+  sendPasswordResetEmail,
+} from "../services/email.service.js";
 
 const router = Router();
 
@@ -129,13 +133,12 @@ router.post(
       });
 
       const verificationUrl =
-        `http://localhost:3000/api/auth/verify-email?token=${verificationToken}`;
-
-      console.log(
-        "Email verification URL:",
-        verificationUrl
-      );
-
+        `${process.env.BACKEND_URL}/api/auth/verify-email?token=${verificationToken}`;
+      try {
+  await sendVerificationEmail(user.email, verificationUrl);
+} catch (error) {
+  console.error("Failed to send verification email:", error);
+}
       // 7. Never return password
       const {
         password: _,
@@ -600,13 +603,13 @@ router.post(
       ]);
 
       const verificationUrl =
-        `http://localhost:3000/api/auth/verify-email?token=${verificationToken}`;
+        `${process.env.BACKEND_URL}/api/auth/verify-email?token=${verificationToken}`;
 
-      console.log(
-        "Email verification URL:",
-        verificationUrl
-      );
-
+    try {
+  await sendVerificationEmail(user.email, verificationUrl);
+} catch (error) {
+  console.error("Failed to send verification email:", error);
+}
       return res.status(200).json({
         success: true,
         message:
@@ -883,12 +886,13 @@ router.post(
       // In production this will be sent through
       // an email service instead.
       const resetUrl =
-        `http://localhost:3000/api/auth/reset-password?token=${resetToken}`;
+        `${process.env.BACKEND_URL}/api/auth/reset-password?token=${resetToken}`;
 
-      console.log(
-        "Password reset URL:",
-        resetUrl
-      );
+    try {
+  await sendPasswordResetEmail(user.email, resetUrl);
+} catch (error) {
+  console.error("Failed to send password reset email:", error);
+}
 
       // 8. Generic response
       return res.status(200).json({
