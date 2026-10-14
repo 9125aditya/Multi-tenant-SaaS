@@ -29,6 +29,7 @@ import {
 } from "../middleware/auth.middleware.js";
 import { authorize } from "../middleware/role.middleware.js";
 import { authRateLimiter } from "../middleware/rate-limit.middleware.js";
+import { createAuditLog } from "../utils/audit-log.js";
 
 const router = Router();
 
@@ -99,6 +100,17 @@ router.post(
           tenantId,
         },
       });
+
+      await createAuditLog({
+  tenantId: user.tenantId,
+  userId: user.id,
+  action: "USER_CREATED",
+  entity: "User",
+  entityId: user.id,
+  metadata: {
+    role: user.role,
+  },
+});
 
       // 6. Generate email verification token
       const verificationToken =
@@ -213,7 +225,13 @@ router.post(
             "Please verify your email before logging in",
         });
       }
-
+      await createAuditLog({
+  tenantId: user.tenantId,
+  userId: user.id,
+  action: "LOGIN",
+  entity: "User",
+  entityId: user.id,
+});
       // 5. Generate access token
       const accessToken = generateAccessToken({
         userId: user.id,
@@ -221,6 +239,7 @@ router.post(
         role: user.role,
         tokenVersion: user.tokenVersion,
       });
+
 
       // 6. Generate refresh token
       const {
@@ -485,25 +504,35 @@ router.get(
         });
       }
 
-      await prisma.$transaction([
-        prisma.user.update({
-          where: {
-            id: user.id,
-          },
-          data: {
-            emailVerifiedAt: new Date(),
-          },
-        }),
+   await prisma.$transaction([
+  prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      emailVerifiedAt: new Date(),
+    },
+  }),
 
-        prisma.emailVerificationToken.update({
-          where: {
-            id: verificationToken.id,
-          },
-          data: {
-            usedAt: new Date(),
-          },
-        }),
-      ]);
+  prisma.emailVerificationToken.update({
+    where: {
+      id: verificationToken.id,
+    },
+    data: {
+      usedAt: new Date(),
+    },
+  }),
+
+  prisma.auditLog.create({
+    data: {
+      tenantId: verificationToken.tenantId,
+      userId: verificationToken.userId,
+      action: "EMAIL_VERIFIED",
+      entity: "User",
+      entityId: verificationToken.userId,
+    },
+  }),
+]);
 
       return res.status(200).json({
         success: true,
@@ -677,8 +706,18 @@ router.post(
             revokedAt: new Date(),
           },
         });
+
+        // 6. Create audit log
+        await createAuditLog({
+          tenantId: session.tenantId,
+          userId: session.userId,
+          action: "LOGOUT",
+          entity: "User",
+          entityId: session.userId,
+        });
       }
 
+      // 7. Success
       return res.status(200).json({
         success: true,
         message: "Logged out successfully",
@@ -688,7 +727,6 @@ router.post(
     }
   }
 );
-
 /*
 |--------------------------------------------------------------------------
 | CHANGE PASSWORD
@@ -939,10 +977,7 @@ router.post(
   async (req, res, next) => {
     try {
       // 1. Validate request
-      const result =
-        resetPasswordSchema.safeParse(
-          req.body
-        );
+      const result = resetPasswordSchema.safeParse(req.body);
 
       if (!result.success) {
         return res.status(400).json({
@@ -952,16 +987,10 @@ router.post(
         });
       }
 
-      const {
-        token,
-        newPassword,
-      } = result.data;
+      const { token, newPassword } = result.data;
 
       // 2. Hash the raw token
-      const tokenHash =
-        hashPasswordResetToken(
-          token
-        );
+      const tokenHash = hashPasswordResetToken(token);
 
       // 3. Find reset token
       const resetToken =
@@ -988,25 +1017,20 @@ router.post(
       }
 
       // 5. Check token expiry
-      if (
-        resetToken.expiresAt <= new Date()
-      ) {
+      if (resetToken.expiresAt <= new Date()) {
         return res.status(400).json({
           success: false,
-          message:
-            "Password reset token has expired",
+          message: "Password reset token has expired",
         });
       }
 
       // 6. Find user using both userId and tenantId
-      const user =
-        await prisma.user.findFirst({
-          where: {
-            id: resetToken.userId,
-            tenantId:
-              resetToken.tenantId,
-          },
-        });
+      const user = await prisma.user.findFirst({
+        where: {
+          id: resetToken.userId,
+          tenantId: resetToken.tenantId,
+        },
+      });
 
       if (!user) {
         return res.status(400).json({
@@ -1016,11 +1040,10 @@ router.post(
       }
 
       // 7. Prevent using the same password
-      const samePassword =
-        await bcrypt.compare(
-          newPassword,
-          user.password
-        );
+      const samePassword = await bcrypt.compare(
+        newPassword,
+        user.password
+      );
 
       if (samePassword) {
         return res.status(400).json({
@@ -1031,59 +1054,57 @@ router.post(
       }
 
       // 8. Hash new password
-      const hashedPassword =
-        await bcrypt.hash(
-          newPassword,
-          10
-        );
+      const hashedPassword = await bcrypt.hash(
+        newPassword,
+        10
+      );
 
       /*
-       * 9. Update password
-       *
-       * Increment tokenVersion so any existing
-       * access tokens become invalid.
-       *
-       * Revoke all refresh sessions so the attacker
-       * cannot continue using an old refresh token.
-       *
-       * Mark reset token as used so it cannot be
-       * reused.
+       * 9. Update password, revoke sessions,
+       *    consume reset token, and create audit log
        */
-      await prisma.$transaction([
-        prisma.user.update({
+      await prisma.$transaction(async (tx) => {
+        await tx.user.update({
           where: {
             id: user.id,
           },
           data: {
-            password:
-              hashedPassword,
+            password: hashedPassword,
             tokenVersion: {
               increment: 1,
             },
           },
-        }),
+        });
 
-        prisma.refreshSession.updateMany({
+        await tx.refreshSession.updateMany({
           where: {
             userId: user.id,
             revokedAt: null,
           },
           data: {
-            revokedAt:
-              new Date(),
+            revokedAt: new Date(),
           },
-        }),
+        });
 
-        prisma.passwordResetToken.update({
+        await tx.passwordResetToken.update({
           where: {
             id: resetToken.id,
           },
           data: {
-            usedAt:
-              new Date(),
+            usedAt: new Date(),
           },
-        }),
-      ]);
+        });
+
+        await tx.auditLog.create({
+          data: {
+            tenantId: user.tenantId,
+            userId: user.id,
+            action: "PASSWORD_RESET",
+            entity: "User",
+            entityId: user.id,
+          },
+        });
+      });
 
       // 10. Success
       return res.status(200).json({
@@ -1096,7 +1117,6 @@ router.post(
     }
   }
 );
-
 /*
 |--------------------------------------------------------------------------
 | CURRENT USER

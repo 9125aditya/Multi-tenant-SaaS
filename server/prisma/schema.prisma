@@ -25,6 +25,7 @@ model Tenant {
   refreshSessions         RefreshSession[]
   emailVerificationTokens EmailVerificationToken[]
   passwordResetTokens     PasswordResetToken[]
+  auditLogs               AuditLog[]
 }
 
 model User {
@@ -37,6 +38,7 @@ model User {
   tokenVersion        Int                  @default(0)
   emailVerifiedAt     DateTime?
   passwordResetTokens PasswordResetToken[]
+  auditLogs           AuditLog[]
 
   tenant                  Tenant                   @relation(fields: [tenantId], references: [id])
   refreshSessions         RefreshSession[]
@@ -99,4 +101,25 @@ model PasswordResetToken {
   @@index([userId])
   @@index([tenantId])
   @@index([expiresAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  tenantId  String
+  userId    String?
+  action    String
+  entity    String?
+  entityId  String?
+  metadata  Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
 }
