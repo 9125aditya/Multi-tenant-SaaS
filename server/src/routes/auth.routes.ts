@@ -30,6 +30,7 @@ import {
 import { authorize } from "../middleware/role.middleware.js";
 import { authRateLimiter } from "../middleware/rate-limit.middleware.js";
 import { createAuditLog } from "../utils/audit-log.js";
+import { validate } from "../middleware/validate.middleware.js";
 
 const router = Router();
 
@@ -42,20 +43,13 @@ const router = Router();
 router.post(
   "/register",
   authRateLimiter,
+  validate(registerSchema),
   async (req, res, next) => {
     try {
       // 1. Validate request
-      const result = registerSchema.safeParse(req.body);
+    
 
-      if (!result.success) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid input",
-          errors: result.error.issues,
-        });
-      }
-
-      const { name, email, password, tenantId } = result.data;
+      const { name, email, password, tenantId } = req.body;
 
       // 2. Check if tenant exists
       const tenant = await prisma.tenant.findUnique({
@@ -168,24 +162,17 @@ router.post(
 router.post(
   "/login",
   authRateLimiter,
+   validate(loginSchema),
   async (req, res, next) => {
     try {
       // 1. Validate request
-      const result = loginSchema.safeParse(req.body);
-
-      if (!result.success) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid input",
-          errors: result.error.issues,
-        });
-      }
+   
 
       const {
         email,
         password,
         tenantId,
-      } = result.data;
+      } = req.body;
 
       // 2. Find user inside tenant
       const user = await prisma.user.findUnique({
@@ -293,21 +280,13 @@ router.post(
 router.post(
   "/refresh",
   authRateLimiter,
+  validate(refreshTokenSchema),
   async (req, res, next) => {
     try {
       // 1. Validate request
-      const result =
-        refreshTokenSchema.safeParse(req.body);
+    
 
-      if (!result.success) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid input",
-          errors: result.error.issues,
-        });
-      }
-
-      const { refreshToken } = result.data;
+      const { refreshToken } = req.body;
 
       // 2. Hash provided refresh token
       const tokenHash =
@@ -553,23 +532,13 @@ router.get(
 router.post(
   "/resend-verification",
   authRateLimiter,
+  validate(resendVerificationSchema),
   async (req, res, next) => {
     try {
-      const result =
-        resendVerificationSchema.safeParse(
-          req.body
-        );
-
-      if (!result.success) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid input",
-          errors: result.error.issues,
-        });
-      }
+     
 
       const { email, tenantId } =
-        result.data;
+        req.body;
 
       const user = await prisma.user.findFirst({
         where: {
@@ -657,24 +626,14 @@ router.post(
 
 router.post(
   "/logout",
+    validate(refreshTokenSchema),
   async (req, res, next) => {
     try {
       // 1. Validate request
-      const result =
-        refreshTokenSchema.safeParse(
-          req.body
-        );
-
-      if (!result.success) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid input",
-          errors: result.error.issues,
-        });
-      }
+      
 
       const { refreshToken } =
-        result.data;
+        req.body;
 
       // 2. Hash refresh token
       const tokenHash =
@@ -736,26 +695,15 @@ router.post(
 router.patch(
   "/change-password",
   authenticate,
+  validate(changePasswordSchema),
   async (req: AuthRequest, res, next) => {
     try {
       // 1. Validate request
-      const result =
-        changePasswordSchema.safeParse(
-          req.body
-        );
-
-      if (!result.success) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid input",
-          errors: result.error.issues,
-        });
-      }
-
+      
       const {
         currentPassword,
         newPassword,
-      } = result.data;
+      } = req.body;
 
       // 2. Find authenticated user
       const user =
@@ -855,26 +803,15 @@ router.patch(
 router.post(
   "/forgot-password",
   authRateLimiter,
+  validate(forgotPasswordSchema),
   async (req, res, next) => {
     try {
       // 1. Validate request
-      const result =
-        forgotPasswordSchema.safeParse(
-          req.body
-        );
-
-      if (!result.success) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid input",
-          errors: result.error.issues,
-        });
-      }
 
       const {
         email,
         tenantId,
-      } = result.data;
+      } = req.body;
 
       // 2. Find user inside tenant
       const user =
@@ -974,20 +911,13 @@ router.post(
 router.post(
   "/reset-password",
   authRateLimiter,
+  validate(resetPasswordSchema),
   async (req, res, next) => {
     try {
       // 1. Validate request
-      const result = resetPasswordSchema.safeParse(req.body);
+      
 
-      if (!result.success) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid input",
-          errors: result.error.issues,
-        });
-      }
-
-      const { token, newPassword } = result.data;
+      const { token, newPassword } = req.body;
 
       // 2. Hash the raw token
       const tokenHash = hashPasswordResetToken(token);

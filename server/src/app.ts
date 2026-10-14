@@ -31,6 +31,13 @@ app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/audit-logs", auditRoutes);
 
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+  });
+});
+
 app.use(errorHandler);
 
 export default app;

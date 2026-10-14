@@ -1,40 +1,56 @@
 import { Request, Response, NextFunction } from "express";
-
-type PrismaError = {
-  code?: string;
-};
+import { Prisma } from "../generated/client.js";
 
 export const errorHandler = (
-  error: unknown,
+  err: unknown,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  console.error(error);
+  console.error(err);
 
-  if (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error
-  ) {
-    const prismaError = error as PrismaError;
+  if (res.headersSent) {
+    return next(err);
+  }
 
-    if (prismaError.code === "P2002") {
-      return res.status(409).json({
-        success: false,
-        message: "A record with this value already exists",
-      });
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    switch (err.code) {
+      case "P2002":
+        return res.status(409).json({
+          success: false,
+          message: "A record with this value already exists",
+        });
+
+      case "P2025":
+        return res.status(404).json({
+          success: false,
+          message: "Record not found",
+        });
+
+      default:
+        return res.status(400).json({
+          success: false,
+          message: "Database request failed",
+        });
     }
   }
 
-  const isProduction = process.env.NODE_ENV === "production";
+  if (err instanceof Prisma.PrismaClientValidationError) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid database request",
+    });
+  }
+
+  if (err instanceof SyntaxError) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid JSON payload",
+    });
+  }
 
   return res.status(500).json({
     success: false,
-    message: isProduction
-      ? "Internal server error"
-      : error instanceof Error
-        ? error.message
-        : "Internal server error",
+    message: "Internal server error",
   });
 };

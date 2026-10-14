@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { Router } from "express";
 import prisma from "../lib/prisma.js";
 import {
@@ -7,8 +8,12 @@ import {
 import { authorize } from "../middleware/role.middleware.js";
 import { updateUserSchema } from "../schemas/user.schema.js";
 import { createAuditLog } from "../utils/audit-log.js";
+import { validate } from "../middleware/validate.middleware.js";
+
 
 const router = Router();
+
+
 
 // Get all users in the current tenant
 router.get("/", authenticate, async (req: AuthRequest, res) => {
@@ -89,21 +94,12 @@ router.patch(
   "/:id",
   authenticate,
   authorize("ADMIN", "SUPER_ADMIN"),
+  validate(updateUserSchema),
   async (req: AuthRequest, res) => {
     try {
       const id = req.params.id as string;
 
-      const result = updateUserSchema.safeParse(req.body);
-
-      if (!result.success) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid input",
-          errors: result.error.issues,
-        });
-      }
-
-      const { name, email, role } = result.data;
+      const { name, email, role } = req.body;
 
       const existingUser = await prisma.user.findFirst({
         where: {
