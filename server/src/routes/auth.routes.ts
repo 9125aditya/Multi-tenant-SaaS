@@ -38,6 +38,49 @@ import {
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *               - tenantId
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: John Doe
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: TestPassword123
+ *               tenantId:
+ *                 type: string
+ *                 example: cmtkkruxe0000p7ufcihmi23c
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: Validation failed
+ *       404:
+ *         description: Tenant not found
+ *       409:
+ *         description: User already exists
+ */
+
 /*
 |--------------------------------------------------------------------------
 | REGISTER
@@ -156,6 +199,43 @@ router.post(
   }
 );
 
+
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *               - tenantId
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: TestPassword123
+ *               tenantId:
+ *                 type: string
+ *                 example: cmtkkruxe0000p7ufcihmi23c
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       400:
+ *         description: Validation failed
+ *       401:
+ *         description: Invalid credentials
+ */
 /*
 |--------------------------------------------------------------------------
 | LOGIN
@@ -273,6 +353,33 @@ router.post(
     }
   }
 );
+
+/**
+ * @swagger
+ * /api/auth/refresh:
+ *   post:
+ *     summary: Refresh access token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 example: your-refresh-token
+ *     responses:
+ *       200:
+ *         description: Access token refreshed successfully
+ *       400:
+ *         description: Validation failed
+ *       401:
+ *         description: Invalid or expired refresh token
+ */
 
 /*
 |--------------------------------------------------------------------------
@@ -408,6 +515,26 @@ router.post(
   }
 );
 
+
+/**
+ * @swagger
+ * /api/auth/verify-email:
+ *   get:
+ *     summary: Verify user email
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email verification token
+ *     responses:
+ *       200:
+ *         description: Email verified successfully
+ *       400:
+ *         description: Invalid or expired verification token
+ */
 /*
 |--------------------------------------------------------------------------
 | VERIFY EMAIL
@@ -526,6 +653,36 @@ router.get(
   }
 );
 
+/**
+ * @swagger
+ * /api/auth/resend-verification:
+ *   post:
+ *     summary: Resend email verification link
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - tenantId
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john@example.com
+ *               tenantId:
+ *                 type: string
+ *                 example: cmtkkruxe0000p7ufcihmi23c
+ *     responses:
+ *       200:
+ *         description: Verification email request processed
+ *       400:
+ *         description: Validation failed
+ */
+
 /*
 |--------------------------------------------------------------------------
 | RESEND VERIFICATION
@@ -621,6 +778,33 @@ router.post(
   }
 );
 
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Logout user
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 example: refresh-token
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ *       401:
+ *         description: Unauthorized
+ */
 /*
 |--------------------------------------------------------------------------
 | LOGOUT
@@ -689,6 +873,41 @@ router.post(
     }
   }
 );
+
+/**
+ * @swagger
+ * /api/auth/change-password:
+ *   post:
+ *     summary: Change authenticated user's password
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 format: password
+ *                 example: OldPassword123
+ *               newPassword:
+ *                 type: string
+ *                 format: password
+ *                 example: NewPassword123
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *       400:
+ *         description: Validation failed
+ *       401:
+ *         description: Unauthorized
+ */
 /*
 |--------------------------------------------------------------------------
 | CHANGE PASSWORD
@@ -796,6 +1015,36 @@ router.patch(
     }
   }
 );
+
+/**
+ * @swagger
+ * /api/auth/forgot-password:
+ *   post:
+ *     summary: Request a password reset
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - tenantId
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john@example.com
+ *               tenantId:
+ *                 type: string
+ *                 example: cmtkkruxe0000p7ufcihmi23c
+ *     responses:
+ *       200:
+ *         description: Password reset request processed
+ *       400:
+ *         description: Validation failed
+ */
 
 /*
 |--------------------------------------------------------------------------
@@ -906,6 +1155,40 @@ router.post(
   }
 );
 
+
+/**
+ * @swagger
+ * /api/auth/reset-password:
+ *   post:
+ *     summary: Reset user password
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *               - tenantId
+ *               - newPassword
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 example: reset-token
+ *               tenantId:
+ *                 type: string
+ *                 example: cmtkkruxe0000p7ufcihmi23c
+ *               newPassword:
+ *                 type: string
+ *                 format: password
+ *                 example: NewPassword123
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ *       400:
+ *         description: Invalid or expired reset token
+ */
 /*
 |--------------------------------------------------------------------------
 | RESET PASSWORD
@@ -1051,6 +1334,21 @@ router.post(
     }
   }
 );
+
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     summary: Get authenticated user
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Authenticated user details
+ *       401:
+ *         description: Unauthorized
+ */
 /*
 |--------------------------------------------------------------------------
 | CURRENT USER

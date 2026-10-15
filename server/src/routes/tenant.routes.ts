@@ -12,6 +12,20 @@ import {
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api/tenants:
+ *   get:
+ *     summary: Get tenants
+ *     tags: [Tenants]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Tenants retrieved successfully
+ *       401:
+ *         description: Unauthorized
+ */
 // Get all tenants
 router.get("/", authenticate, async (req: AuthRequest, res) => {
   try {
@@ -41,6 +55,41 @@ router.get("/", authenticate, async (req: AuthRequest, res) => {
     });
   }
 });
+
+/**
+ * @swagger
+ * /api/tenants:
+ *   post:
+ *     summary: Create a new tenant
+ *     tags: [Tenants]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - slug
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Acme Corporation
+ *               slug:
+ *                 type: string
+ *                 example: acme-corp
+ *     responses:
+ *       201:
+ *         description: Tenant created successfully
+ *       400:
+ *         description: Validation failed
+ *       401:
+ *         description: Unauthorized
+ *       409:
+ *         description: Tenant already exists
+ */
 
 // Create a tenant
 router.post(

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Prisma } from "../generated/client.js";
+import { env } from "../config/env.js";
 
 export const errorHandler = (
   err: unknown,
@@ -7,7 +8,9 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
+  if (env.NODE_ENV !== "production") {
   console.error(err);
+}
 
   if (res.headersSent) {
     return next(err);

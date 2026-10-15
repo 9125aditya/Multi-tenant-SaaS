@@ -3,6 +3,7 @@ import {
   generateRefreshToken,
   hashRefreshToken,
 } from "./refresh-token.js";
+import { env } from "../config/env.js";
 
 interface AccessTokenPayload {
   userId: string;
@@ -16,7 +17,7 @@ export const generateAccessToken = (
 ): string => {
   return jwt.sign(
     payload,
-    process.env.JWT_SECRET!,
+   env.JWT_SECRET,
     {
       expiresIn: "15m",
     }

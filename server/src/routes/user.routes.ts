@@ -14,7 +14,20 @@ import { validate } from "../middleware/validate.middleware.js";
 const router = Router();
 
 
-
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Get all users in the tenant
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of users
+ *       401:
+ *         description: Unauthorized
+ */
 // Get all users in the current tenant
 router.get("/", authenticate, async (req: AuthRequest, res) => {
   try {
@@ -47,6 +60,29 @@ router.get("/", authenticate, async (req: AuthRequest, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Get a user by ID
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User details
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User not found
+ */
 // Get a single user in the current tenant
 router.get("/:id", authenticate, async (req: AuthRequest, res) => {
   try {
@@ -88,6 +124,56 @@ router.get("/:id", authenticate, async (req: AuthRequest, res) => {
     });
   }
 });
+
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   patch:
+ *     summary: Update a user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Updated Name
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: updated@example.com
+ *               role:
+ *                 type: string
+ *                 enum:
+ *                   - SUPER_ADMIN
+ *                   - ADMIN
+ *                   - MANAGER
+ *                   - USER
+ *                 example: MANAGER
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *       400:
+ *         description: Validation failed
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: User not found
+ */
 
 // Update a user in the current tenant
 router.patch(
@@ -202,6 +288,31 @@ router.patch(
     }
   }
 );
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   delete:
+ *     summary: Delete a user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: User not found
+ */
 
 // Delete a user in the current tenant
 router.delete(
