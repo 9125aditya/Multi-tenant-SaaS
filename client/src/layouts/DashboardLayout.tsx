@@ -10,11 +10,25 @@ import {
   Menu,
   X,
   Shield,
-  Layers,
 } from 'lucide-react';
 
 import { useAuth } from '../auth/AuthContext';
 import ThemeToggle from '../theme/ThemeToggle';
+
+function VeyraMark({ className = '' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 80 64"
+      aria-hidden="true"
+      className={className}
+      fill="currentColor"
+    >
+      <path d="M10 8h14l16 24 16-24h14L48 56H32L10 8Z" />
+      <path d="M10 8h14l16 24-8 8L10 8Z" opacity="0.62" />
+      <path d="M24 8 40 32l-8 8L18 18 10 8h14Z" opacity="0.82" />
+    </svg>
+  );
+}
 
 export default function DashboardLayout() {
   const { user, logout } = useAuth();
@@ -113,14 +127,15 @@ export default function DashboardLayout() {
   );
 
   return (
-    <div className="veyra-paper min-h-screen flex flex-col antialiased md:flex-row">
+    <div className="veyra-paper flex h-screen overflow-hidden antialiased md:flex-row">
+
       {/* =========================================================
           MOBILE TOP BAR
       ========================================================= */}
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-[var(--veyra-line)] bg-[var(--veyra-surface)] px-4 py-3 shadow-sm md:hidden">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--veyra-line-strong)] bg-[var(--veyra-paper-deep)] text-[var(--veyra-ink)] shadow-sm">
-            <Layers className="h-5 w-5" />
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center text-[var(--veyra-ink)]">
+            <VeyraMark className="h-8 w-8" />
           </div>
 
           <div>
@@ -164,7 +179,7 @@ export default function DashboardLayout() {
       <aside
         className={[
           'fixed inset-y-0 left-0 z-40',
-          'flex w-72 shrink-0 flex-col',
+          'flex h-screen w-72 shrink-0 flex-col',
           'border-r border-[var(--veyra-line)]',
           'bg-[var(--veyra-surface)]',
           'shadow-lg transition-transform duration-300 ease-in-out',
@@ -174,10 +189,13 @@ export default function DashboardLayout() {
             : '-translate-x-full',
         ].join(' ')}
       >
-        {/* Desktop Brand */}
-        <div className="hidden items-center gap-3 border-b border-[var(--veyra-line)] px-5 py-5 md:flex">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--veyra-line-strong)] bg-[var(--veyra-paper-deep)] text-[var(--veyra-ink)] shadow-sm">
-            <Layers className="h-5 w-5" />
+
+        {/* =======================================================
+            DESKTOP BRAND
+        ======================================================= */
+        <div className="hidden shrink-0 items-center gap-3 border-b border-[var(--veyra-line)] px-5 py-5 md:flex">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center text-[var(--veyra-ink)]">
+            <VeyraMark className="h-9 w-9" />
           </div>
 
           <div>
@@ -193,8 +211,8 @@ export default function DashboardLayout() {
 
         {/* =======================================================
             CURRENT USER
-        ======================================================= */}
-        <div className="mx-4 my-4 rounded-xl border border-[var(--veyra-line)] bg-[var(--veyra-paper)]/70 p-3">
+        ======================================================= */
+        <div className="mx-4 my-4 shrink-0 rounded-xl border border-[var(--veyra-line)] bg-[var(--veyra-paper)]/70 p-3">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--veyra-ink)] text-xs font-bold text-[var(--veyra-paper)]">
               {initials}
@@ -218,8 +236,9 @@ export default function DashboardLayout() {
 
         {/* =======================================================
             NAVIGATION
-        ======================================================= */}
-        <nav className="flex-1 overflow-y-auto px-3 py-2">
+        ======================================================= */
+        <nav className="min-h-0 flex-1 overflow-y-auto px-3 py-2">
+
           {/* Overview */}
           <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--veyra-ink-soft)]">
             Overview
@@ -244,7 +263,7 @@ export default function DashboardLayout() {
               <>
                 <LayoutDashboard
                   className={[
-                    'h-4 w-4',
+                    'h-4 w-4 shrink-0',
                     isActive
                       ? 'text-[var(--veyra-accent)]'
                       : 'text-[var(--veyra-ink-soft)]',
@@ -276,34 +295,38 @@ export default function DashboardLayout() {
         </nav>
 
         {/* =======================================================
-            LOGOUT
-        ======================================================= */}
-        <div className="border-t border-[var(--veyra-line)] p-4">
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--veyra-ink-soft)] transition-colors hover:bg-[var(--veyra-paper-deep)] hover:text-[var(--veyra-destructive)] focus:outline-none focus:ring-2 focus:ring-[var(--veyra-ring)]"
-          >
-            <LogOut className="h-4 w-4 shrink-0" />
+            SIDEBAR FOOTER
+            ALWAYS VISIBLE
+        ======================================================= */
+        <div className="shrink-0 border-t border-[var(--veyra-line)] bg-[var(--veyra-surface)] p-3">
+          <div className="flex items-center gap-2">
 
-            <span>Sign out</span>
-          </button>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex min-w-0 flex-1 items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--veyra-ink-soft)] transition-colors hover:bg-[var(--veyra-paper-deep)] hover:text-[var(--veyra-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--veyra-ring)]"
+            >
+              <LogOut className="h-4 w-4 shrink-0" />
+
+              <span>Sign out</span>
+            </button>
+
+            <ThemeToggle />
+
+          </div>
         </div>
+
       </aside>
 
       {/* =========================================================
           MAIN CONTENT
-      ========================================================= */}
-      <main className="min-w-0 flex-1 overflow-y-auto p-5 sm:p-8 lg:p-10">
-        {/* Top toolbar */}
-        <div className="mb-6 flex items-center justify-end">
-          <ThemeToggle />
-        </div>
-
+      ========================================================= */
+      <main className="min-w-0 flex-1 overflow-y-auto px-5 pb-5 pt-3 sm:px-8 sm:pb-8 sm:pt-4 lg:px-10 lg:pb-10 lg:pt-5">
         <div className="mx-auto w-full max-w-[1500px]">
           <Outlet />
         </div>
       </main>
+
     </div>
   );
 }
