@@ -10,11 +10,10 @@ import RegisterPage from './pages/auth/RegisterPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import VerifyEmailPage from './pages/auth/VerifyEmailPage';
+import UsersPage from './pages/admin/UsersPage';
 import {
-  UsersListPage,
   UserDetailPage,
   AuditLogsPage,
-  AdminUsersPage,
   AdminAuditLogsPage,
 } from './pages/Placeholders';
 
@@ -42,13 +41,13 @@ export default function App() {
             <Route element={<DashboardLayout />}>
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/users" element={<UsersListPage />} />
-              <Route path="/users/:id" element={<UserDetailPage />} />
               <Route path="/audit-logs" element={<AuditLogsPage />} />
 
               {/* Role-Aware Admin Routes */}
               <Route element={<RoleRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']} />}>
-                <Route path="/admin/users" element={<AdminUsersPage />} />
+                <Route path="/users" element={<UsersPage />} />
+                <Route path="/users/:id" element={<UserDetailPage />} />
+                <Route path="/admin/users" element={<UsersPage />} />
                 <Route path="/admin/audit-logs" element={<AdminAuditLogsPage />} />
               </Route>
             </Route>
