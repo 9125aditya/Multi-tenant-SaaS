@@ -1,201 +1,124 @@
 import { useState } from 'react';
-import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
-  Layers,
   LayoutDashboard,
+  User,
+  Building2,
   Users,
   FileText,
-  UserCircle,
+  LogOut,
   Menu,
   X,
-  ChevronDown,
-  LogOut,
-  User,
+  Shield,
 } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
-import { canManageUsers, canViewAuditLogs } from '../utils/permissions';
 
 export default function DashboardLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  const showAdminNav = canManageUsers(user) || canViewAuditLogs(user);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
-    setIsLoggingOut(true);
-    setProfileMenuOpen(false);
-    await logout();
-    setIsLoggingOut(false);
-    navigate('/login', { replace: true });
+    try {
+      await logout();
+      navigate('/login');
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
   };
 
-  const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-      isActive
-        ? 'bg-indigo-50 text-indigo-600 font-semibold'
-        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-    }`;
+  const showAdminFeatures = ['ADMIN', 'SUPER_ADMIN'].includes(user?.role ?? '');
+
+  const navigation = [
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Profile', href: '/profile', icon: User },
+    { name: 'Tenant Settings', href: '/settings/tenant', icon: Building2 },
+    ...(showAdminFeatures
+      ? [
+          { name: 'User Management', href: '/users', icon: Users },
+          { name: 'Audit Logs', href: '/audit-logs', icon: FileText },
+        ]
+      : []),
+  ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-slate-900/50 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
+      <div className="md:hidden flex items-center justify-between bg-white border-b border-slate-200 px-4 py-3 sticky top-0 z-30">
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">
+            S
+          </div>
+          <span className="font-bold text-slate-900">SaaS Workspace</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="text-slate-600 hover:text-slate-900 p-1"
+        >
+          {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
+      </div>
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-200 lg:translate-x-0 lg:static lg:inset-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`${
+          mobileMenuOpen ? 'flex' : 'hidden'
+        } md:flex flex-col w-full md:w-64 bg-white border-r border-slate-200 shrink-0 fixed md:static inset-y-0 left-0 z-40 pt-16 md:pt-0`}
       >
-        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-200">
-          <Link to="/dashboard" className="flex items-center gap-2 text-indigo-600">
-            <Layers className="h-6 w-6" />
-            <span className="font-bold text-slate-900 text-lg">SaaS Portal</span>
-          </Link>
-          <button
-            type="button"
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-slate-500 hover:text-slate-700"
-          >
-            <X className="h-5 w-5" />
-          </button>
+        <div className="hidden md:flex items-center gap-2.5 px-6 py-5 border-b border-slate-100">
+          <div className="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold shadow-xs">
+            S
+          </div>
+          <div>
+            <span className="font-bold text-slate-900 block leading-none">SaaS App</span>
+            <span className="text-[11px] text-slate-400 font-mono">Multi-Tenant v1.0</span>
+          </div>
         </div>
 
-        <nav className="p-4 space-y-6">
-          <div>
-            <p className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              Workspace
-            </p>
-            <div className="space-y-1">
-              <NavLink
-                to="/dashboard"
-                onClick={() => setSidebarOpen(false)}
-                className={linkClass}
-              >
-                <LayoutDashboard className="h-4 w-4" />
-                Dashboard
-              </NavLink>
-              <NavLink
-                to="/profile"
-                onClick={() => setSidebarOpen(false)}
-                className={linkClass}
-              >
-                <User className="h-4 w-4" />
-                Profile
-              </NavLink>
-            </div>
+        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 mx-3 my-3 rounded-xl">
+          <p className="text-xs font-semibold text-slate-900 truncate">
+            {user?.name || user?.email || 'Workspace User'}
+          </p>
+          <div className="flex items-center gap-1.5 mt-1 text-[11px] text-indigo-600 font-medium">
+            <Shield className="h-3 w-3" />
+            <span>{user?.role}</span>
           </div>
+        </div>
 
-          {showAdminNav && (
-            <div>
-              <p className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                Administration
-              </p>
-              <div className="space-y-1">
-                {canManageUsers(user) && (
-                  <NavLink
-                    to="/users"
-                    onClick={() => setSidebarOpen(false)}
-                    className={linkClass}
-                  >
-                    <Users className="h-4 w-4" />
-                    Users
-                  </NavLink>
-                )}
-                {canViewAuditLogs(user) && (
-                  <NavLink
-                    to="/audit-logs"
-                    onClick={() => setSidebarOpen(false)}
-                    className={linkClass}
-                  >
-                    <FileText className="h-4 w-4" />
-                    Audit Logs
-                  </NavLink>
-                )}
-              </div>
-            </div>
-          )}
+        <nav className="flex-1 px-3 space-y-1 py-2">
+          {navigation.map((item) => (
+            <NavLink
+              key={item.name}
+              to={item.href}
+              onClick={() => setMobileMenuOpen(false)}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'bg-indigo-50 text-indigo-700 font-semibold'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }`
+              }
+            >
+              <item.icon className="h-4 w-4 shrink-0" />
+              <span>{item.name}</span>
+            </NavLink>
+          ))}
         </nav>
-      </aside>
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="p-3 border-t border-slate-100">
           <button
             type="button"
-            onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-2 rounded-md text-slate-500 hover:bg-slate-100"
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
           >
-            <Menu className="h-5 w-5" />
+            <LogOut className="h-4 w-4 shrink-0" />
+            <span>Sign Out</span>
           </button>
+        </div>
+      </aside>
 
-          <div className="flex-1 flex items-center gap-2 sm:pl-2">
-            {user?.tenantId && (
-              <span className="hidden md:inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">
-                Tenant: <span className="font-mono text-slate-700">{user.tenantId}</span>
-              </span>
-            )}
-          </div>
-
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-              className="flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100"
-            >
-              <UserCircle className="h-6 w-6 text-indigo-600" />
-              <div className="hidden sm:flex flex-col items-start leading-tight">
-                <span className="text-xs font-semibold text-slate-900">
-                  {user?.name || user?.email || 'Authenticated User'}
-                </span>
-                <span className="text-[10px] font-mono text-slate-500">{user?.role}</span>
-              </div>
-              <ChevronDown className="h-4 w-4 text-slate-400" />
-            </button>
-
-            {profileMenuOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50">
-                <div className="px-4 py-2 border-b border-slate-100">
-                  <p className="text-xs font-semibold text-slate-900 truncate">
-                    {user?.name || 'User'}
-                  </p>
-                  {user?.email && (
-                    <p className="text-xs text-slate-500 truncate">{user.email}</p>
-                  )}
-                  <p className="mt-1 inline-block text-[10px] font-mono font-semibold bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded">
-                    {user?.role}
-                  </p>
-                </div>
-                <Link
-                  to="/profile"
-                  onClick={() => setProfileMenuOpen(false)}
-                  className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
-                >
-                  Your Profile
-                </Link>
-                <button
-                  type="button"
-                  disabled={isLoggingOut}
-                  onClick={handleLogout}
-                  className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-slate-50 disabled:opacity-50"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>{isLoggingOut ? 'Signing out...' : 'Sign out'}</span>
-                </button>
-              </div>
-            )}
-          </div>
-        </header>
-
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          <Outlet />
-        </main>
-      </div>
+      <main className="flex-1 p-6 md:p-8 max-w-7xl mx-auto w-full overflow-y-auto">
+        <Outlet />
+      </main>
     </div>
   );
 }
