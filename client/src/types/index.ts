@@ -75,16 +75,14 @@ export interface ApiError {
 
 export interface AuditLog {
   id: string;
+  tenantId: string;
+  userId: string | null;
   action: string;
-  userId: string;
-  user?: {
-    name: string;
-    email: string;
-  };
-  entity: string;
-  entityId: string;
-  ipAddress?: string;
-  metadata?: Record<string, unknown>;
+  entity: string | null;
+  entityId: string | null;
+  metadata: Record<string, unknown> | null;
+  ipAddress: string | null;
+  userAgent: string | null;
   createdAt: string;
 }
 

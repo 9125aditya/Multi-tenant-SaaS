@@ -1,7 +1,7 @@
 import { apiRequest } from './client';
 import type { AuditLog } from '../../types';
 
-export interface AuditFilterParams {
+export interface AuditLogParams {
   action?: string;
   userId?: string;
   page?: number;
@@ -12,22 +12,31 @@ export interface AuditLogsResponse {
   success: boolean;
   message?: string;
   data: AuditLog[];
-  total?: number;
-  page?: number;
-  limit?: number;
+  total: number;
+  page: number;
+  limit: number;
 }
 
 export const auditApi = {
-  list: (filters: AuditFilterParams = {}) => {
-    const params = new URLSearchParams();
-    if (filters.action) params.set('action', filters.action);
-    if (filters.userId) params.set('userId', filters.userId);
-    if (filters.page) params.set('page', String(filters.page));
-    if (filters.limit) params.set('limit', String(filters.limit));
+  getAuditLogs: (params: AuditLogParams = {}) => {
+    const queryParams = new URLSearchParams();
+    if (params.action && params.action.trim()) {
+      queryParams.set('action', params.action.trim());
+    }
+    if (params.userId && params.userId.trim() && params.userId !== 'ALL') {
+      queryParams.set('userId', params.userId.trim());
+    }
+    if (params.page) {
+      queryParams.set('page', String(params.page));
+    }
+    if (params.limit) {
+      queryParams.set('limit', String(params.limit));
+    }
 
-    const query = params.toString();
+    const query = queryParams.toString();
     return apiRequest<AuditLogsResponse>(
       `/audit-logs${query ? `?${query}` : ''}`
     );
   },
+  list: (params: AuditLogParams = {}) => auditApi.getAuditLogs(params),
 };
