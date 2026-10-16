@@ -16,7 +16,7 @@ export function UserDetailModal({ user, isOpen, onClose }: UserDetailModalProps)
       <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-lg w-full overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
           <div className="flex items-center gap-2">
-            <UserCircle2 className="h-6 w-6 text-indigo-600" />
+            <UserCircle2 className="h-6 w-6 text-stone-600" />
             <h3 className="text-base font-bold text-slate-900">User Details</h3>
           </div>
           <button
@@ -30,7 +30,7 @@ export function UserDetailModal({ user, isOpen, onClose }: UserDetailModalProps)
 
         <div className="p-6 space-y-6">
           <div className="flex items-center gap-4 pb-4 border-b border-slate-100">
-            <div className="h-12 w-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold text-lg">
+            <div className="h-12 w-12 rounded-full bg-stone-50 flex items-center justify-center text-stone-600 font-bold text-lg">
               {(user.name?.[0] || user.email?.[0] || 'U').toUpperCase()}
             </div>
             <div>
@@ -71,7 +71,7 @@ export function UserDetailModal({ user, isOpen, onClose }: UserDetailModalProps)
                 Updated At
               </span>
               <span className="text-xs text-slate-700">
-              u
+              {user.updatedAt ? new Date(user.updatedAt).toLocaleString() : 'N/A'}
               </span>
             </div>
           </div>

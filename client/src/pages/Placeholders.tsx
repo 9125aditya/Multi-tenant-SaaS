@@ -5,7 +5,7 @@ function PageShell({ title, subtitle, icon: Icon }: { title: string; subtitle: s
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="flex items-center gap-3">
-        <div className="h-12 w-12 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+        <div className="h-12 w-12 rounded-xl bg-stone-50 flex items-center justify-center text-stone-600">
           <Icon className="h-6 w-6" />
         </div>
         <div>

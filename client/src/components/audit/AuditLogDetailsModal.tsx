@@ -22,7 +22,7 @@ export function AuditLogDetailsModal({
       <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-2xl w-full overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
           <div className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-indigo-600" />
+            <FileText className="h-5 w-5 text-stone-600" />
             <h3 className="text-base font-bold text-slate-900">Audit Log Details</h3>
           </div>
           <button

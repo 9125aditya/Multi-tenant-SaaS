@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';
+import { ThemeProvider } from './theme/ThemeContext';
 import { ProtectedRoute, PublicRoute, RoleRoute } from './auth/RouteGuards';
 import AuthLayout from './layouts/AuthLayout';
 import DashboardLayout from './layouts/DashboardLayout';
@@ -12,16 +13,18 @@ import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import VerifyEmailPage from './pages/auth/VerifyEmailPage';
 import UsersPage from './pages/admin/UsersPage';
+import AuditLogsPage from './pages/admin/AuditLogsPage';
 import {
   UserDetailPage,
-  AuditLogsPage,
   AdminAuditLogsPage,
 } from './pages/Placeholders';
 
+
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
         <Routes>
           {/* Default Redirect */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -43,10 +46,10 @@ export default function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/settings/tenant" element={<TenantSettingsPage />} />
-              <Route path="/audit-logs" element={<AuditLogsPage />} />
 
               {/* Role-Aware Admin Routes */}
               <Route element={<RoleRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']} />}>
+                <Route path="/audit-logs" element={<AuditLogsPage />} />
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/users/:id" element={<UserDetailPage />} />
                 <Route path="/admin/users" element={<UsersPage />} />
@@ -55,7 +58,8 @@ export default function App() {
             </Route>
           </Route>
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

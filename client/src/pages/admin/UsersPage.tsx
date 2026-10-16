@@ -63,6 +63,15 @@ export default function UsersPage() {
     setTimeout(() => setSuccessMessage(null), 4000);
   };
 
+  const roleCounts = useMemo(
+    () => ({
+      privileged: users.filter((u) => u.role === 'SUPER_ADMIN' || u.role === 'ADMIN').length,
+      managers: users.filter((u) => u.role === 'MANAGER').length,
+      members: users.filter((u) => u.role === 'USER').length,
+    }),
+    [users]
+  );
+
   // Filtered users calculation
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
@@ -113,9 +122,18 @@ export default function UsersPage() {
             View, search, filter, and manage workspace users and permissions.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg border border-indigo-100">
-            Total Users: {users.length}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-semibold bg-stone-50 text-stone-700 px-3 py-1.5 rounded-lg border border-stone-100">
+            {users.length} total
+          </span>
+          <span className="text-xs font-semibold bg-purple-50 text-purple-700 px-3 py-1.5 rounded-lg border border-purple-100">
+            {roleCounts.privileged} admin
+          </span>
+          <span className="text-xs font-semibold bg-amber-50 text-amber-700 px-3 py-1.5 rounded-lg border border-amber-100">
+            {roleCounts.managers} manager
+          </span>
+          <span className="text-xs font-semibold bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg border border-slate-200">
+            {roleCounts.members} member
           </span>
         </div>
       </div>
@@ -153,7 +171,7 @@ export default function UsersPage() {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-300 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+            className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-300 text-sm text-slate-900 placeholder-slate-400 focus:border-stone-600 focus:outline-none focus:ring-1 focus:ring-stone-600"
           />
         </div>
 
@@ -165,7 +183,7 @@ export default function UsersPage() {
               setSelectedRole(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full sm:w-48 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 bg-white focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+            className="w-full sm:w-48 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 bg-white focus:border-stone-600 focus:outline-none focus:ring-1 focus:ring-stone-600"
           >
             <option value="ALL">All Roles</option>
             <option value="SUPER_ADMIN">SUPER_ADMIN</option>
@@ -180,7 +198,7 @@ export default function UsersPage() {
       <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
         {isLoading ? (
           <div className="py-20 flex flex-col items-center justify-center gap-2 text-slate-500 text-sm">
-            <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+            <Loader2 className="h-6 w-6 animate-spin text-stone-600" />
             <span>Loading users...</span>
           </div>
         ) : paginatedUsers.length === 0 ? (
@@ -213,7 +231,7 @@ export default function UsersPage() {
                         <div className="font-semibold text-slate-900 flex items-center gap-2">
                           {u.name || 'Unnamed User'}
                           {isSelf && (
-                            <span className="text-[10px] font-mono bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded font-medium">
+                            <span className="text-[10px] font-mono bg-stone-50 text-stone-600 px-1.5 py-0.5 rounded font-medium">
                               You
                             </span>
                           )}
@@ -232,7 +250,7 @@ export default function UsersPage() {
                             type="button"
                             onClick={() => setViewingUser(u)}
                             title="View Details"
-                            className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-stone-600 hover:bg-slate-100 rounded-lg transition-colors"
                           >
                             <Eye className="h-4 w-4" />
                           </button>
@@ -240,15 +258,17 @@ export default function UsersPage() {
                             type="button"
                             onClick={() => setEditingUser(u)}
                             title="Edit User"
-                            className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-stone-600 hover:bg-slate-100 rounded-lg transition-colors"
                           >
                             <Pencil className="h-4 w-4" />
                           </button>
                           <button
                             type="button"
-                            onClick={() => setDeletingUser(u)}
-                            title="Delete User"
-                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            onClick={() => !isSelf && setDeletingUser(u)}
+                            disabled={isSelf}
+                            title={isSelf ? 'You cannot delete your own account' : 'Delete User'}
+                            aria-label={isSelf ? 'You cannot delete your own account' : `Delete ${u.name || u.email}`}
+                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>

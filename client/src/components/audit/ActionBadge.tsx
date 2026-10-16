@@ -3,7 +3,7 @@ const actionColors: Record<string, string> = {
   LOGOUT: 'bg-slate-100 text-slate-700 border-slate-200',
   PASSWORD_RESET: 'bg-amber-50 text-amber-700 border-amber-200',
   EMAIL_VERIFIED: 'bg-blue-50 text-blue-700 border-blue-200',
-  USER_CREATED: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+  USER_CREATED: 'bg-stone-50 text-stone-700 border-stone-200',
   USER_UPDATED: 'bg-purple-50 text-purple-700 border-purple-200',
   ROLE_CHANGED: 'bg-rose-50 text-rose-700 border-rose-200',
   USER_DELETED: 'bg-red-50 text-red-700 border-red-200',

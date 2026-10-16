@@ -9,6 +9,7 @@ export interface User {
   tokenVersion?: number;
   emailVerifiedAt?: string | null;
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface MeResponse {

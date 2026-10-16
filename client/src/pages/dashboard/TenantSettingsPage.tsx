@@ -95,7 +95,7 @@ export default function TenantSettingsPage() {
   if (isLoading) {
     return (
       <div className="py-24 flex flex-col items-center justify-center gap-2 text-slate-500 text-sm">
-        <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+        <Loader2 className="h-6 w-6 animate-spin text-stone-600" />
         <span>Loading tenant settings...</span>
       </div>
     );
@@ -111,7 +111,7 @@ export default function TenantSettingsPage() {
         <button
           type="button"
           onClick={fetchTenant}
-          className="px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-500 transition-colors"
+          className="px-4 py-2 rounded-lg text-sm font-semibold bg-stone-600 text-white hover:bg-stone-500 transition-colors"
         >
           Retry
         </button>
@@ -147,7 +147,7 @@ export default function TenantSettingsPage() {
         {/* Section A: Tenant Information Cards */}
         <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-2xs space-y-6">
           <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-            <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600">
+            <div className="p-2.5 rounded-xl bg-stone-50 text-stone-600">
               <Building2 className="h-5 w-5" />
             </div>
             <div>
@@ -231,7 +231,7 @@ export default function TenantSettingsPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter organization name"
-                className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed"
+                className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-stone-600 focus:outline-none focus:ring-1 focus:ring-stone-600 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed"
               />
             </div>
 
@@ -245,7 +245,7 @@ export default function TenantSettingsPage() {
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
                 placeholder="enter-organization-slug"
-                className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm font-mono text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed"
+                className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm font-mono text-slate-900 placeholder-slate-400 focus:border-stone-600 focus:outline-none focus:ring-1 focus:ring-stone-600 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed"
               />
               <span className="text-[11px] text-slate-400 mt-1 block">
                 Used in URLs and tenant routing identifiers.
@@ -257,7 +257,7 @@ export default function TenantSettingsPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting || !isDirty || isInvalid}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-xs"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-stone-600 hover:bg-stone-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-xs"
                 >
                   {isSubmitting ? (
                     <>

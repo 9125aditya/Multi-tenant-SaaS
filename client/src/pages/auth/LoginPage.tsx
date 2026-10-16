@@ -115,7 +115,7 @@ export default function LoginPage() {
                 type="button"
                 disabled={isResending}
                 onClick={handleResendVerification}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-500 disabled:opacity-60"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-600 hover:text-stone-500 disabled:opacity-60"
               >
                 {isResending ? (
                   <>
@@ -153,7 +153,7 @@ export default function LoginPage() {
             value={tenantId}
             onChange={(e) => setTenantId(e.target.value)}
             placeholder="e.g. cmtkkruxe0000p7ufcihmi23c"
-            className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+            className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-stone-600 focus:outline-none focus:ring-1 focus:ring-stone-600"
           />
           {fieldErrors.tenantId && (
             <p className="mt-1 text-xs text-red-600">{fieldErrors.tenantId}</p>
@@ -172,7 +172,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@company.com"
-            className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+            className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-stone-600 focus:outline-none focus:ring-1 focus:ring-stone-600"
           />
           {fieldErrors.email && (
             <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
@@ -186,7 +186,7 @@ export default function LoginPage() {
             </label>
             <Link
               to="/forgot-password"
-              className="text-xs font-medium text-indigo-600 hover:text-indigo-500"
+              className="text-xs font-medium text-stone-600 hover:text-stone-500"
             >
               Forgot password?
             </Link>
@@ -199,7 +199,7 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+            className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-stone-600 focus:outline-none focus:ring-1 focus:ring-stone-600"
           />
           {fieldErrors.password && (
             <p className="mt-1 text-xs text-red-600">{fieldErrors.password}</p>
@@ -209,7 +209,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+          className="w-full flex items-center justify-center gap-2 rounded-lg bg-stone-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-stone-500 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
           {isSubmitting ? (
             <>
@@ -228,13 +228,13 @@ export default function LoginPage() {
       <div className="pt-4 border-t border-slate-200 text-center text-sm text-slate-600 space-y-2">
         <div>
           Don&apos;t have an account?{' '}
-          <Link to="/register" className="font-semibold text-indigo-600 hover:text-indigo-500">
+          <Link to="/register" className="font-semibold text-stone-600 hover:text-stone-500">
             Create account
           </Link>
         </div>
         <div className="text-xs">
           Need a new verification email?{' '}
-          <Link to="/verify-email" className="font-medium text-slate-700 hover:text-indigo-600 underline">
+          <Link to="/verify-email" className="font-medium text-slate-700 hover:text-stone-600 underline">
             Resend verification
           </Link>
         </div>

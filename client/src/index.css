@@ -1,7 +1,161 @@
 @import "tailwindcss";
 
+:root {
+  /* Notebook light theme */
+  --veyra-paper: #f5f5f0;
+  --veyra-paper-deep: #e8e8e1;
+  --veyra-surface: #ffffff;
+  --veyra-popover: #ffffff;
+  --veyra-ink: #1f1f1f;
+  --veyra-ink-soft: #5a5a5a;
+  --veyra-muted: #6b6b66;
+  --veyra-line: #d8d8d0;
+  --veyra-line-strong: #bcbcb4;
+  --veyra-accent: #2f2f2f;
+  --veyra-accent-soft: #e5e5df;
+  --veyra-margin: #c5c5bd;
+  --veyra-ring: #4a4a4a;
+  --veyra-destructive: #a65d5d;
+}
+
+html[data-theme='dark'] {
+  /* Notebook dark theme tokens from the reference palette */
+  --veyra-paper: #2b2b2b;
+  --veyra-paper-deep: #3b3b3b;
+  --veyra-surface: #333333;
+  --veyra-popover: #333333;
+  --veyra-ink: #f0f0e0;
+  --veyra-ink-soft: #b7b7ad;
+  --veyra-muted: #454545;
+  --veyra-line: #4f4f4f;
+  --veyra-line-strong: #5a5a5a;
+  --veyra-accent: #e0e0e0;
+  --veyra-accent-soft: #454545;
+  --veyra-margin: #55554f;
+  --veyra-ring: #c0c0c0;
+  --veyra-destructive: #d9afaf;
+}
+
 @layer base {
-  body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+  html {
+    background: var(--veyra-paper);
   }
+
+  body {
+    @apply antialiased;
+    background-color: var(--veyra-paper);
+    color: var(--veyra-ink);
+  }
+
+  ::selection {
+    background: var(--veyra-accent-soft);
+    color: var(--veyra-ink);
+  }
+}
+
+@layer utilities {
+  .veyra-paper {
+    background-color: var(--veyra-paper);
+    background-image:
+      linear-gradient(
+        to right,
+        transparent 0,
+        transparent 5.25rem,
+        color-mix(in oklch, var(--veyra-margin) 35%, transparent) 5.25rem,
+        color-mix(in oklch, var(--veyra-margin) 35%, transparent) 5.3rem,
+        transparent 5.3rem
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in oklch, var(--veyra-line) 55%, transparent) 1px,
+        transparent 1px
+      );
+    background-size: 100% 100%, 100% 2rem;
+  }
+
+  .veyra-card {
+    background: var(--veyra-surface);
+    border-color: var(--veyra-line);
+    box-shadow: 0 1px 2px color-mix(in oklch, var(--veyra-ink) 8%, transparent);
+  }
+
+  .veyra-ink {
+    color: var(--veyra-ink);
+  }
+
+  .veyra-muted {
+    color: var(--veyra-ink-soft);
+  }
+
+  .veyra-accent {
+    color: var(--veyra-accent);
+  }
+
+  .veyra-accent-bg {
+    background: var(--veyra-accent-soft);
+  }
+}
+
+/* Keep existing Tailwind utility-based pages coherent when Notebook dark mode is active. */
+html[data-theme='dark'] .bg-white,
+html[data-theme='dark'] [class*='bg-white/'] {
+  background-color: var(--veyra-surface) !important;
+}
+
+html[data-theme='dark'] .bg-slate-50,
+html[data-theme='dark'] [class*='bg-slate-50/'] {
+  background-color: var(--veyra-paper-deep) !important;
+}
+
+html[data-theme='dark'] .bg-slate-100,
+html[data-theme='dark'] [class*='bg-slate-100/'] {
+  background-color: var(--veyra-muted) !important;
+}
+
+html[data-theme='dark'] .bg-slate-200 {
+  background-color: var(--veyra-line-strong) !important;
+}
+
+html[data-theme='dark'] .bg-slate-900 {
+  background-color: var(--veyra-ink) !important;
+}
+
+html[data-theme='dark'] .text-slate-900,
+html[data-theme='dark'] .text-slate-800 {
+  color: var(--veyra-ink) !important;
+}
+
+html[data-theme='dark'] .text-slate-700,
+html[data-theme='dark'] .text-slate-600 {
+  color: var(--veyra-ink-soft) !important;
+}
+
+html[data-theme='dark'] .text-slate-500,
+html[data-theme='dark'] .text-slate-400 {
+  color: #96968d !important;
+}
+
+html[data-theme='dark'] .text-slate-300 {
+  color: #b0b0a6 !important;
+}
+
+html[data-theme='dark'] .border-slate-300,
+html[data-theme='dark'] .border-slate-200,
+html[data-theme='dark'] .border-slate-100 {
+  border-color: var(--veyra-line) !important;
+}
+
+html[data-theme='dark'] .divide-slate-100 > :not(:last-child) {
+  border-color: var(--veyra-line) !important;
+}
+
+html[data-theme='dark'] .hover\:bg-slate-50:hover,
+html[data-theme='dark'] .hover\:bg-slate-100:hover,
+html[data-theme='dark'] .hover\:bg-white:hover {
+  background-color: var(--veyra-paper-deep) !important;
+}
+
+html[data-theme='dark'] .hover\:text-slate-900:hover,
+html[data-theme='dark'] .hover\:text-slate-800:hover {
+  color: var(--veyra-ink) !important;
 }

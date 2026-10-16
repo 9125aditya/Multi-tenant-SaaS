@@ -35,7 +35,7 @@ export default function ResetPasswordPage() {
         <div className="flex flex-col gap-2">
           <Link
             to="/forgot-password"
-            className="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
+            className="w-full inline-flex items-center justify-center rounded-lg bg-stone-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-stone-500 transition-colors"
           >
             Request New Reset Link
           </Link>
@@ -103,7 +103,7 @@ export default function ResetPasswordPage() {
         <div className="pt-2">
           <Link
             to="/login"
-            className="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
+            className="w-full inline-flex items-center justify-center rounded-lg bg-stone-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-stone-500 transition-colors"
           >
             Continue to Sign In
           </Link>
@@ -144,7 +144,7 @@ export default function ResetPasswordPage() {
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             placeholder="At least 6 characters"
-            className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+            className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-stone-600 focus:outline-none focus:ring-1 focus:ring-stone-600"
           />
           {fieldErrors.newPassword && (
             <p className="mt-1 text-xs text-red-600">{fieldErrors.newPassword}</p>
@@ -163,7 +163,7 @@ export default function ResetPasswordPage() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Re-enter new password"
-            className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+            className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-stone-600 focus:outline-none focus:ring-1 focus:ring-stone-600"
           />
           {fieldErrors.confirmPassword && (
             <p className="mt-1 text-xs text-red-600">{fieldErrors.confirmPassword}</p>
@@ -173,7 +173,7 @@ export default function ResetPasswordPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+          className="w-full flex items-center justify-center gap-2 rounded-lg bg-stone-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-stone-500 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
           {isSubmitting ? (
             <>
@@ -190,7 +190,7 @@ export default function ResetPasswordPage() {
       </form>
 
       <div className="pt-4 border-t border-slate-200 text-center text-sm text-slate-600">
-        <Link to="/login" className="font-semibold text-indigo-600 hover:text-indigo-500">
+        <Link to="/login" className="font-semibold text-stone-600 hover:text-stone-500">
           Back to Sign In
         </Link>
       </div>

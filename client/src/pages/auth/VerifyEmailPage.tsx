@@ -93,7 +93,7 @@ export default function VerifyEmailPage() {
   if (status === 'loading') {
     return (
       <div className="py-8 text-center space-y-4">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mx-auto" />
+        <Loader2 className="h-8 w-8 animate-spin text-stone-600 mx-auto" />
         <div className="space-y-1">
           <h1 className="text-lg font-bold text-slate-900">Verifying Email</h1>
           <p className="text-sm text-slate-500">{statusMessage}</p>
@@ -114,7 +114,7 @@ export default function VerifyEmailPage() {
         </div>
         <Link
           to="/login"
-          className="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
+          className="w-full inline-flex items-center justify-center rounded-lg bg-stone-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-stone-500 transition-colors"
         >
           Continue to Sign In
         </Link>
@@ -169,7 +169,7 @@ export default function VerifyEmailPage() {
               value={tenantId}
               onChange={(e) => setTenantId(e.target.value)}
               placeholder="e.g. cmtkkruxe0000p7ufcihmi23c"
-              className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+              className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-stone-600 focus:outline-none focus:ring-1 focus:ring-stone-600"
             />
             {fieldErrors.tenantId && (
               <p className="mt-1 text-xs text-red-600">{fieldErrors.tenantId}</p>
@@ -187,7 +187,7 @@ export default function VerifyEmailPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@company.com"
-              className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+              className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-stone-600 focus:outline-none focus:ring-1 focus:ring-stone-600"
             />
             {fieldErrors.email && (
               <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
@@ -197,7 +197,7 @@ export default function VerifyEmailPage() {
           <button
             type="submit"
             disabled={isResending}
-            className="w-full flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-60 transition-colors"
+            className="w-full flex items-center justify-center gap-2 rounded-lg bg-stone-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-stone-500 disabled:opacity-60 transition-colors"
           >
             {isResending ? (
               <>
@@ -217,7 +217,7 @@ export default function VerifyEmailPage() {
       <div className="pt-4 border-t border-slate-200 text-center">
         <Link
           to="/login"
-          className="text-sm font-semibold text-indigo-600 hover:text-indigo-500"
+          className="text-sm font-semibold text-stone-600 hover:text-stone-500"
         >
           Back to Sign In
         </Link>

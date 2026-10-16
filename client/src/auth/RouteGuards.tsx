@@ -7,7 +7,7 @@ function FullPageLoader() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="flex items-center gap-2 text-slate-600 text-sm font-medium">
-        <Loader2 className="h-5 w-5 animate-spin text-indigo-600" />
+        <Loader2 className="h-5 w-5 animate-spin text-stone-600" />
         <span>Restoring session...</span>
       </div>
     </div>
@@ -65,7 +65,7 @@ export function RoleRoute({ allowedRoles }: { allowedRoles: Role[] }) {
         <div className="pt-2">
           <Link
             to="/dashboard"
-            className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+            className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium bg-stone-600 text-white hover:bg-stone-700 transition-colors"
           >
             Back to Dashboard
           </Link>
