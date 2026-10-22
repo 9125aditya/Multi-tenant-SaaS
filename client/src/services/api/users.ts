@@ -1,5 +1,5 @@
 import { apiRequest } from './client';
-import type { User } from '../../types';
+import type { User, Role } from '../../types';
 
 export interface UsersResponse {
   success: boolean;
@@ -14,7 +14,7 @@ export interface UserDetailResponse {
 export interface UpdateUserInput {
   name?: string;
   email?: string;
-  role?: 'SUPER_ADMIN' | 'ADMIN' | 'MANAGER' | 'USER';
+  role?: Role;
 }
 
 export interface UpdateUserResponse {
@@ -29,15 +29,24 @@ export interface DeleteUserResponse {
 }
 
 export const usersApi = {
-  getUsers: () => apiRequest<UsersResponse>('/users'),
-  getUser: (id: string) => apiRequest<UserDetailResponse>(`/users/${id}`),
-  updateUser: (id: string, data: UpdateUserInput) =>
-    apiRequest<UpdateUserResponse>(`/users/${id}`, {
+  getUsers() {
+    return apiRequest<UsersResponse>('/users');
+  },
+
+  getUser(id: string) {
+    return apiRequest<UserDetailResponse>(`/users/${id}`);
+  },
+
+  updateUser(id: string, data: UpdateUserInput) {
+    return apiRequest<UpdateUserResponse>(`/users/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
-    }),
-  deleteUser: (id: string) =>
-    apiRequest<DeleteUserResponse>(`/users/${id}`, {
+    });
+  },
+
+  deleteUser(id: string) {
+    return apiRequest<DeleteUserResponse>(`/users/${id}`, {
       method: 'DELETE',
-    }),
+    });
+  },
 };

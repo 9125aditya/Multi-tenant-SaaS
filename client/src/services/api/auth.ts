@@ -14,58 +14,71 @@ import type {
 } from '../../types';
 
 export const authApi = {
-  register: (data: RegisterInput) =>
-    apiRequest<RegisterResponse>('/auth/register', {
+  register(data: RegisterInput) {
+    return apiRequest<RegisterResponse>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
-    }),
+    });
+  },
 
-  login: (data: LoginInput) =>
-    apiRequest<LoginResponse>('/auth/login', {
+  login(data: LoginInput) {
+    return apiRequest<LoginResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(data),
-    }),
+    });
+  },
 
-  refresh: (refreshToken: string) =>
-    apiRequest<RefreshResponse>('/auth/refresh', {
+  refresh(refreshToken: string) {
+    return apiRequest<RefreshResponse>('/auth/refresh', {
       method: 'POST',
       body: JSON.stringify({ refreshToken }),
-    }),
+    });
+  },
 
-  verifyEmail: (token: string) =>
-    apiRequest<BasicApiResponse>(
-      `/auth/verify-email?token=${encodeURIComponent(token)}`
-    ),
+  verifyEmail(token: string) {
+    const encodedToken = encodeURIComponent(token);
 
-  resendVerification: (data: ResendVerificationInput) =>
-    apiRequest<BasicApiResponse>('/auth/resend-verification', {
+    return apiRequest<BasicApiResponse>(
+      `/auth/verify-email?token=${encodedToken}`
+    );
+  },
+
+  resendVerification(data: ResendVerificationInput) {
+    return apiRequest<BasicApiResponse>('/auth/resend-verification', {
       method: 'POST',
       body: JSON.stringify(data),
-    }),
+    });
+  },
 
-  logout: (refreshToken: string) =>
-    apiRequest<BasicApiResponse>('/auth/logout', {
+  logout(refreshToken: string) {
+    return apiRequest<BasicApiResponse>('/auth/logout', {
       method: 'POST',
       body: JSON.stringify({ refreshToken }),
-    }),
+    });
+  },
 
-  changePassword: (data: ChangePasswordInput) =>
-    apiRequest<BasicApiResponse>('/auth/change-password', {
+  changePassword(data: ChangePasswordInput) {
+    return apiRequest<BasicApiResponse>('/auth/change-password', {
       method: 'PATCH',
       body: JSON.stringify(data),
-    }),
+    });
+  },
 
-  forgotPassword: (data: ForgotPasswordInput) =>
-    apiRequest<BasicApiResponse>('/auth/forgot-password', {
+  forgotPassword(data: ForgotPasswordInput) {
+    return apiRequest<BasicApiResponse>('/auth/forgot-password', {
       method: 'POST',
       body: JSON.stringify(data),
-    }),
+    });
+  },
 
-  resetPassword: (data: ResetPasswordInput) =>
-    apiRequest<BasicApiResponse>('/auth/reset-password', {
+  resetPassword(data: ResetPasswordInput) {
+    return apiRequest<BasicApiResponse>('/auth/reset-password', {
       method: 'POST',
       body: JSON.stringify(data),
-    }),
+    });
+  },
 
-  me: () => apiRequest<MeResponse>('/auth/me'),
+  me() {
+    return apiRequest<MeResponse>('/auth/me');
+  },
 };

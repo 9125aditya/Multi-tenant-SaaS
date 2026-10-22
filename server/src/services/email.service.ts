@@ -1,21 +1,16 @@
-import { Resend } from "resend";
+import { Resend } from 'resend';
+import { env } from '../config/env.js';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-const emailFrom = process.env.EMAIL_FROM;
-
-if (!emailFrom) {
-  throw new Error("EMAIL_FROM is not configured");
-}
+const resend = new Resend(env.RESEND_API_KEY);
 
 export const sendVerificationEmail = async (
   email: string,
   verificationUrl: string
 ) => {
   await resend.emails.send({
-    from: emailFrom,
+    from: env.EMAIL_FROM,
     to: email,
-    subject: "Verify your email",
+    subject: 'Verify your email',
     html: `
       <h2>Verify your email</h2>
 
@@ -52,9 +47,9 @@ export const sendPasswordResetEmail = async (
   resetUrl: string
 ) => {
   await resend.emails.send({
-    from: emailFrom,
+    from: env.EMAIL_FROM,
     to: email,
-    subject: "Reset your password",
+    subject: 'Reset your password',
     html: `
       <h2>Password reset</h2>
 

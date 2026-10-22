@@ -192,7 +192,7 @@ export default function DashboardLayout() {
 
         {/* =======================================================
             DESKTOP BRAND
-        ======================================================= */
+        ======================================================= */}
         <div className="hidden shrink-0 items-center gap-3 border-b border-[var(--veyra-line)] px-5 py-5 md:flex">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center text-[var(--veyra-ink)]">
             <VeyraMark className="h-9 w-9" />
@@ -211,7 +211,8 @@ export default function DashboardLayout() {
 
         {/* =======================================================
             CURRENT USER
-        ======================================================= */
+        ======================================================= */}
+
         <div className="mx-4 my-4 shrink-0 rounded-xl border border-[var(--veyra-line)] bg-[var(--veyra-paper)]/70 p-3">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--veyra-ink)] text-xs font-bold text-[var(--veyra-paper)]">
@@ -236,7 +237,7 @@ export default function DashboardLayout() {
 
         {/* =======================================================
             NAVIGATION
-        ======================================================= */
+        ======================================================= */}
         <nav className="min-h-0 flex-1 overflow-y-auto px-3 py-2">
 
           {/* Overview */}
@@ -297,7 +298,7 @@ export default function DashboardLayout() {
         {/* =======================================================
             SIDEBAR FOOTER
             ALWAYS VISIBLE
-        ======================================================= */
+        ======================================================= */}
         <div className="shrink-0 border-t border-[var(--veyra-line)] bg-[var(--veyra-surface)] p-3">
           <div className="flex items-center gap-2">
 
@@ -320,7 +321,7 @@ export default function DashboardLayout() {
 
       {/* =========================================================
           MAIN CONTENT
-      ========================================================= */
+      ========================================================= */}
       <main className="min-w-0 flex-1 overflow-y-auto px-5 pb-5 pt-3 sm:px-8 sm:pb-8 sm:pt-4 lg:px-10 lg:pb-10 lg:pt-5">
         <div className="mx-auto w-full max-w-[1500px]">
           <Outlet />

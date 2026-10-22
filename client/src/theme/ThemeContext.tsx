@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import type { ReactNode } from 'react';
 
 type Theme = 'light' | 'dark';
@@ -17,30 +24,43 @@ function getInitialTheme(): Theme {
     return 'light';
   }
 
-  return window.localStorage.getItem(STORAGE_KEY) === 'dark'
-    ? 'dark'
-    : 'light';
+  try {
+    return window.localStorage.getItem(STORAGE_KEY) === 'dark'
+      ? 'dark'
+      : 'light';
+  } catch {
+    return 'light';
+  }
+}
+
+function applyTheme(theme: Theme): void {
+  document.documentElement.dataset.theme = theme;
+  document.documentElement.style.colorScheme = theme;
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    document.documentElement.style.colorScheme = theme;
-    window.localStorage.setItem(STORAGE_KEY, theme);
+    applyTheme(theme);
+
+    try {
+      window.localStorage.setItem(STORAGE_KEY, theme);
+    } catch {
+      // Theme still works for the current session if storage is unavailable.
+    }
   }, [theme]);
 
-  const value = useMemo(
+  const toggleTheme = useCallback(() => {
+    setTheme((current) => (current === 'light' ? 'dark' : 'light'));
+  }, []);
+
+  const value = useMemo<ThemeContextValue>(
     () => ({
       theme,
-      toggleTheme: () => {
-        setTheme((current) =>
-          current === 'light' ? 'dark' : 'light'
-        );
-      },
+      toggleTheme,
     }),
-    [theme]
+    [theme, toggleTheme]
   );
 
   return (
@@ -50,7 +70,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useTheme() {
+export function useTheme(): ThemeContextValue {
   const context = useContext(ThemeContext);
 
   if (!context) {
