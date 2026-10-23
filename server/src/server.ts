@@ -6,9 +6,7 @@ import { env } from "./config/env.js";
 const PORT = env.PORT;
 
 const server = app.listen(PORT, () => {
-  console.log(
-    `Server is up and running on port http://localhost:${PORT}`
-  );
+  console.log(`Server is running on port ${PORT}`);
 });
 
 const shutdown = async (signal: string) => {
